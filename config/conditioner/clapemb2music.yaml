@@ -21,7 +21,7 @@ conditioners:
     model: clap
     clap:
       checkpoint: //reference/clap/music_audioset_epoch_15_esc_90.14.pt
-      model_arch: 'HTSAT-base'
+      model_arch: "HTSAT-base"
       enable_fusion: false
       sample_rate: 48000
       max_audio_length: 10
@@ -29,11 +29,11 @@ conditioners:
       dim: 512
       attribute: description
       normalize: true
-      quantize: true  # use RVQ quantization
+      quantize: true # use RVQ quantization
       n_q: 12
       bins: 1024
       kmeans_iters: 50
-      text_p: 0.  # probability of using text embed at train time
+      text_p: 0. # probability of using text embed at train time
       cache_path: null
 
 dataset:
