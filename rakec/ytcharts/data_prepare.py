@@ -1,5 +1,6 @@
 import os
 import argparse
+import tqdm
 
 parser = argparse.ArgumentParser(description="handle ytcharts dataset")
 parser.add_argument('--path_mp3', '-pm', dest="path_mp3", required=True, type=str, help="mp3 data path")
@@ -15,7 +16,7 @@ json_path = args.path_json
 output_path = args.output
 
 mp3_dirs = sorted(os.listdir(mp3_path))
-for i in range(len(mp3_dirs)):
+for i in tqdm(range(len(mp3_dirs))):
     ytid = mp3_dirs[i]
     # move audio file
     os.system('cp {target} {output}'.format(
