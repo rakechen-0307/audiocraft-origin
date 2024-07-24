@@ -1,6 +1,6 @@
 import os
 import argparse
-import tqdm
+from tqdm import tqdm
 
 parser = argparse.ArgumentParser(description="handle ytcharts dataset")
 parser.add_argument('--path_mp3', '-pm', dest="path_mp3", required=True, type=str, help="mp3 data path")
