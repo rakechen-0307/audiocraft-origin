@@ -1,5 +1,4 @@
 import os
-import json
 import argparse
 
 parser = argparse.ArgumentParser(description="modify audio sample rate")
@@ -17,14 +16,11 @@ files = sorted(os.listdir(input_path))
 for i in range(len(files)):
     if (files[i].split('.')[-1] == "mp3"):
         os.system("ffmpeg -i {target} -ar 32000 {output}".format(
-            target = input_path + files[i],
-            output = output_path + files[i]
+            target = input_path + "/" + files[i],
+            output = output_path + "/" + files[i]
         ))
     else:
         os.system("cp {target} {output}".format(
-            target = input_path + files[i],
-            output = output_path + files[i]
+            target = input_path + "/" + files[i],
+            output = output_path + "/" + files[i]
         ))
-        with open(output_path + files[i], 'r') as f:
-            data = json.load(f)
-            data["sample_rate"] = 32000
