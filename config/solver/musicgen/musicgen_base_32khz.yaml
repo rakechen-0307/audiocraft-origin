@@ -18,7 +18,7 @@ autocast_dtype: float16
 # (transformer_lm card and n_q must be compatible)
 compression_model_checkpoint: //pretrained/facebook/encodec_32khz
 
-channels: 2
+channels: 1
 sample_rate: 32000
 
 deadlock:
