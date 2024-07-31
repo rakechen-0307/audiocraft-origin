@@ -1,9 +1,9 @@
 default:
-  dora_dir: /work/u2614323/repos/audiocraft/logs/
+  dora_dir: ~/repos/audiocraft/logs/
   partitions:
     global: debug
     team: debug
-  reference_dir: /work/u2614323/repos/audiocraft/logs/
+  reference_dir: ~/repos/audiocraft/logs/
 darwin: # if we detect we are on a Mac, then most likely we are doing unit testing etc.
   dora_dir: /tmp/audiocraft_${oc.env:USER}
   partitions:
