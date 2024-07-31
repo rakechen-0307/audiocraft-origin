@@ -1,9 +1,9 @@
 default:
-  dora_dir: rakec/result/logs/
+  dora_dir: /work/u2614323/code/audiocraft-origin/rakec/result/logs/
   partitions:
     global: debug
     team: debug
-  reference_dir: rakec/result/logs/
+  reference_dir: /work/u2614323/code/audiocraft-origin/rakec/result/logs/
 darwin: # if we detect we are on a Mac, then most likely we are doing unit testing etc.
   dora_dir: /tmp/audiocraft_${oc.env:USER}
   partitions:
