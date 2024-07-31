@@ -2,7 +2,7 @@ datasource:
   max_sample_rate: 32000
   max_channels: 2
 
-  train: egs/ytcharts/train
-  test: egs/ytcharts/test
-  evaluate: egs/ytcharts/test
-  generate: egs/ytcharts/test
+  train: egs/clap_ytcharts/train
+  test: egs/clap_ytcharts/test
+  evaluate: egs/clap_ytcharts/test
+  generate: egs/clap_ytcharts/test
