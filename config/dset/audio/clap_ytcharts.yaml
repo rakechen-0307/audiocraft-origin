@@ -5,6 +5,6 @@ datasource:
   max_channels: 2
 
   train: egs/clap_ytcharts/train
-  test: egs/clap_ytcharts/test
-  evaluate: egs/clap_ytcharts/test
-  generate: egs/clap_ytcharts/test
+  test: egs/clap_ytcharts/valid
+  evaluate: egs/clap_ytcharts/valid
+  generate: egs/clap_ytcharts/valid
