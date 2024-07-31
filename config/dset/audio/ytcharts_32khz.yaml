@@ -1,5 +1,5 @@
 datasource:
-  max_sample_rate: 44100
+  max_sample_rate: 32000
   max_channels: 2
 
   train: egs/ytcharts/train
