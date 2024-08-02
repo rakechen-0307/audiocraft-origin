@@ -23,7 +23,7 @@ codebooks_pattern:
 
 transformer_lm:
   n_q: 4
-  card: 2048
+  card: 1024
   memory_efficient: true
   bias_proj: false
   bias_ff: false
@@ -34,3 +34,16 @@ transformer_lm:
   depthwise_init: current
   zero_bias_init: true
   attention_as_float32: false
+#transformer_lm:
+#  n_q: 4
+#  card: 2048
+#  memory_efficient: true
+#  bias_proj: false
+#  bias_ff: false
+#  bias_attn: false
+#  norm_first: true
+#  layer_scale: null
+#  weight_init: gaussian
+#  depthwise_init: current
+#  zero_bias_init: true
+#  attention_as_float32: false
