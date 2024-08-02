@@ -1,7 +1,7 @@
 # @package __global__
 
 datasource:
-  max_sample_rate: 48000
+  max_sample_rate: 44100
   max_channels: 2
 
   train: egs/clap_ytcharts/train
