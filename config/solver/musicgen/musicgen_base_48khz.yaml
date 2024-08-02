@@ -1,0 +1,87 @@
+# @package __global__
+
+# This is the training loop solver
+# for the base MusicGen model (text-to-music)
+# on monophonic audio sampled at 32 kHz
+defaults:
+  - musicgen/default
+  - /model: lm/musicgen_lm
+  - override /dset: audio/default
+  - _self_
+
+autocast: true
+autocast_dtype: float16
+
+# EnCodec large trained on mono-channel music audio sampled at 32khz
+# with a total stride of 640 leading to 50 frames/s.
+# rvq.n_q=4, rvq.bins=2048, no quantization dropout
+# (transformer_lm card and n_q must be compatible)
+compression_model_checkpoint: //pretrained/facebook/encodec_48khz
+
+channels: 1
+sample_rate: 48000
+
+deadlock:
+  use: true # deadlock detection
+
+dataset:
+  batch_size: 6 # 1 GPU
+  num_workers: 1
+  sample_on_weight: false # Uniform sampling all the way
+  sample_on_duration: false # Uniform sampling all the way
+
+generate:
+  every: 3
+  lm:
+    use_sampling: true
+    top_k: 250
+    top_p: 0.0
+
+evaluate:
+  every: 10
+  num_workers: 2
+  metrics:
+    base: true
+    fad: true
+    kld: true
+    text_consistency: false
+    chroma_cosine: false
+
+# optim:
+#   epochs: 100
+#   updates_per_epoch: 100
+#   optimizer: dadam
+#   lr: 1
+#   ema:
+#     use: true
+#     updates: 10
+#     device: cuda
+
+optim:
+  epochs: 100
+  updates_per_epoch: 25
+  lr: 5e-5
+  optimizer: adamw
+  max_norm: 1.0
+  eager_sync: true
+  adam:
+    betas: [0.9, 0.95]
+    weight_decay: 0.1
+    eps: 1e-8
+  ema:
+    use: true
+    updates: 10
+    device: cpu
+
+logging:
+  log_tensorboard: true
+  log_updates: 10
+
+checkpoint:
+  save_every: 5
+# schedule:
+#   lr_scheduler: cosine
+#   cosine:
+#     warmup: 500
+#     lr_min_ratio: 0.0
+#     cycle_length: 1.0
