@@ -22,7 +22,7 @@ codebooks_pattern:
     delays: [0, 0, 0]
 
 transformer_lm:
-  n_q: 4
+  n_q: 16
   card: 1024
   memory_efficient: true
   bias_proj: false
