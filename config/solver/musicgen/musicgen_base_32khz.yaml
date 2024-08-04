@@ -59,7 +59,7 @@ evaluate:
 
 optim:
   epochs: 100
-  updates_per_epoch: 25
+  updates_per_epoch: 50
   lr: 1e-3
   optimizer: adamw
   max_norm: 1.0
