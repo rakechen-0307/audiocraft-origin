@@ -53,8 +53,8 @@ metrics:
     use_gt: false
     model: tf
     tf:
-      bin: /scratch4/users/rakec/repos/audiocraft # path to local frechet_audio_distance code
-      model_path: //reference/fad/vggish_model.ckpt
+      bin: /work/u2614323/code/audiocraft-origin # path to local frechet_audio_distance code
+      model_path: /work/u2614323/code/audiocraft-origin/rakec/fad/vggish_model.ckpt
   kld:
     use_gt: false
     model: passt
