@@ -42,7 +42,7 @@ evaluate:
   num_workers: 2
   metrics:
     base: true
-    fad: true
+    fad: false
     kld: true
     text_consistency: false
     chroma_cosine: false
