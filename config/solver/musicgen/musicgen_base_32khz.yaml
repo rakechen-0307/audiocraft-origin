@@ -60,7 +60,7 @@ evaluate:
 optim:
   epochs: 200
   updates_per_epoch: 50
-  lr: 1e-3
+  lr: 0.5
   optimizer: adamw
   max_norm: 1.0
   eager_sync: true
