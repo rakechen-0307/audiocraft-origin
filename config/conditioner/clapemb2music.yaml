@@ -2,7 +2,7 @@
 
 classifier_free_guidance:
   training_dropout: 0.3
-  inference_coef: 3.0
+  inference_coef: 1.0
 
 attribute_dropout:
   text: {}
