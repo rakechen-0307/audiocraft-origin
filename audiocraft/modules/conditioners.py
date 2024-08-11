@@ -1407,7 +1407,9 @@ class ConditionFuser(StreamingModule):
                 cross_attention_output.shape[1],
                 device=cross_attention_output.device
             ).view(1, -1, 1)
-            pos_emb = create_sin_embedding(positions, cross_attention_output.shape[-1])
+            # added this to prevent classifier free guidance interrupted by positional embeddings
+            mask = ~(cross_attention_output.mean(dim=-1, keepdim=True) == 0)
+            pos_emb = create_sin_embedding(positions, cross_attention_output.shape[-1]).repeat(B, 1, 1) * mask
             cross_attention_output = cross_attention_output + self.cross_attention_pos_emb_scale * pos_emb
 
         if self._is_streaming:
