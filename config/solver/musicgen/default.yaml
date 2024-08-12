@@ -44,7 +44,7 @@ dataset:
   valid:
     num_samples: 200
   generate:
-    num_samples: 15
+    num_samples: 8
   evaluate:
     num_samples: 200
 
@@ -81,7 +81,7 @@ generate:
   num_workers: 5
   path: samples
   audio:
-    format: wav
+    format: mp3
     strategy: loudness
     sample_rate: ${sample_rate}
     loudness_headroom_db: 14
