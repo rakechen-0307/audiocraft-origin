@@ -546,24 +546,22 @@ class MusicGenSolver(base.StandardSolver):
                 **{f'classifier_free_guidance_{k}': v for k, v in self.cfg.classifier_free_guidance.items()},
                 **self.generation_params
             }
-            rtf = []
             if self.cfg.generate.lm.unprompted_samples:
                 if self.cfg.generate.lm.gen_gt_samples:
                     # get the ground truth instead of generation
                     self.logger.warn(
                         "Use ground truth instead of audio generation as generate.lm.gen_gt_samples=true")
                     gen_unprompted_audio = audio
-                    rtf.append(1.)
+                    rtf = 1.
                 else:
                     gen_unprompted_outputs = self.run_generate_step(
                         batch, gen_duration=target_duration, prompt_duration=None,
                         **self.generation_params)
                     gen_unprompted_audio = gen_unprompted_outputs['gen_audio'].cpu()
-                    rtf.append(gen_unprompted_outputs['rtf'])
+                    rtf = gen_unprompted_outputs['rtf']
                 sample_manager.add_samples(
                     gen_unprompted_audio, self.epoch, hydrated_conditions,
-                    ground_truth_wavs=audio, generation_args=sample_generation_params
-                )
+                    ground_truth_wavs=audio, generation_args=sample_generation_params)
 
             if self.cfg.generate.lm.prompted_samples:
                 gen_outputs = self.run_generate_step(
@@ -575,9 +573,8 @@ class MusicGenSolver(base.StandardSolver):
                     gen_audio, self.epoch, hydrated_conditions,
                     prompt_wavs=prompt_audio, ground_truth_wavs=audio,
                     generation_args=sample_generation_params)
-                rtf.append(gen_outputs["rtf"])
 
-            metrics['rtf'] = sum(rtf) / min(len(rtf), 1)
+            metrics['rtf'] = rtf
             metrics = average(metrics)
 
         flashy.distrib.barrier()
