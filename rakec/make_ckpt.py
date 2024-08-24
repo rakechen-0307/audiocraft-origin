@@ -19,8 +19,8 @@ device = list(sd.values())[0].device
 #     **sd
 # }
 # small
-sd['condition_provider.conditioners.description.output_proj.weight'] = torch.zeros((512, 512), device=device)
-sd['condition_provider.conditioners.description.output_proj.bias'] = torch.zeros((512), device=device)
+sd['condition_provider.conditioners.description.output_proj.weight'] = torch.zeros((768, 1024), device=device)
+sd['condition_provider.conditioners.description.output_proj.bias'] = torch.zeros((1024), device=device)
 # # medium
 # sd['condition_provider.conditioners.description.output_proj.weight'] = torch.zeros((1536, 1024), device=device)
 # sd['condition_provider.conditioners.description.output_proj.bias'] = torch.zeros((1536), device=device)
