@@ -19,7 +19,6 @@ import omegaconf
 import torch
 from torch import nn
 from torch.optim import Optimizer
-
 # LRScheduler was renamed in some torch versions
 try:
     from torch.optim.lr_scheduler import LRScheduler  # type: ignore
@@ -47,7 +46,6 @@ def get_solver(cfg: omegaconf.DictConfig) -> StandardSolver:
     from .musicgen import MusicGenSolver
     from .diffusion import DiffusionSolver
     from .magnet import MagnetSolver, AudioMagnetSolver
-    from .watermark import WatermarkSolver
     klass = {
         'compression': CompressionSolver,
         'musicgen': MusicGenSolver,
@@ -57,7 +55,6 @@ def get_solver(cfg: omegaconf.DictConfig) -> StandardSolver:
         'lm': MusicGenSolver,  # backward compatibility
         'diffusion': DiffusionSolver,
         'sound_lm': AudioGenSolver,  # backward compatibility
-        'watermarking': WatermarkSolver,
     }[cfg.solver]
     return klass(cfg)  # type: ignore
 
@@ -192,9 +189,6 @@ def get_loss(loss_name: str, cfg: omegaconf.DictConfig):
         'mrstft': losses.MRSTFTLoss,
         'msspec': losses.MultiScaleMelSpectrogramLoss,
         'sisnr': losses.SISNR,
-        'wm_detection': losses.WMDetectionLoss,
-        'wm_mb': losses.WMMbLoss,
-        'tf_loudnessratio': losses.TFLoudnessRatio
     }[loss_name]
     kwargs = dict(getattr(cfg, loss_name))
     return klass(**kwargs)

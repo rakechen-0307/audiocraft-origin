@@ -8,6 +8,7 @@ from pathlib import Path
 import time
 import typing as tp
 import warnings
+import hashlib
 
 import flashy
 import math
@@ -119,7 +120,7 @@ class MusicGenSolver(base.StandardSolver):
         assert self.compression_model.sample_rate == self.cfg.sample_rate, (
             f"Compression model sample rate is {self.compression_model.sample_rate} but "
             f"Solver sample rate is {self.cfg.sample_rate}."
-            )
+        )
         # ensure we have matching configuration between LM and compression model
         assert self.cfg.transformer_lm.card == self.compression_model.cardinality, (
             "Cardinalities of the LM and compression model don't match: ",
@@ -140,6 +141,17 @@ class MusicGenSolver(base.StandardSolver):
             assert not self.cfg.autocast, "Cannot use autocast with fsdp"
             self.model = self.wrap_with_fsdp(self.model)
         self.register_ema('model')
+
+        # partial tuning of the model
+        if len(self.cfg.od.match_req_grad) > 0:
+            for k, v in self.model.named_parameters():
+                for text in self.cfg.od.match_req_grad:
+                    if (text in k):
+                        v.requires_grad_(True)
+                        break
+                else:
+                    v.requires_grad_(False)
+
         # initialize optimization
         self.optimizer = builders.get_optimizer(builders.get_optim_parameter_groups(self.model), self.cfg.optim)
         self.lr_scheduler = builders.get_lr_scheduler(self.optimizer, self.cfg.schedule, self.total_updates)
@@ -354,7 +366,9 @@ class MusicGenSolver(base.StandardSolver):
         check_synchronization_points = idx == 1 and self.device == 'cuda'
 
         condition_tensors, audio_tokens, padding_mask = self._prepare_tokens_and_attributes(
-            batch, check_synchronization_points)
+            batch,
+            check_synchronization_points
+        )
 
         self.deadlock_detect.update('tokens_and_conditions')
 
@@ -527,7 +541,12 @@ class MusicGenSolver(base.StandardSolver):
                         elif isinstance(cond_val, WavCondition):
                             cond_dict[cond_key] = cond_val.path
                         elif isinstance(cond_val, JointEmbedCondition):
-                            cond_dict[cond_key] = cond_val.text  # only support text at inference for now
+                            # only support text at inference for now
+                            cond_dict[cond_key] = dict(
+                                text=cond_val.text,
+                                wav=hashlib.sha1(cond_val.wav.contiguous().numpy().data).hexdigest(),
+                                frames=hashlib.sha1(cond_val.frames.contiguous().numpy().data).hexdigest()
+                            )
                         else:
                             # if we reached this point, it is not clear how to log the condition
                             # so we just log the type.
@@ -546,22 +565,24 @@ class MusicGenSolver(base.StandardSolver):
                 **{f'classifier_free_guidance_{k}': v for k, v in self.cfg.classifier_free_guidance.items()},
                 **self.generation_params
             }
+            rtf = []
             if self.cfg.generate.lm.unprompted_samples:
                 if self.cfg.generate.lm.gen_gt_samples:
                     # get the ground truth instead of generation
                     self.logger.warn(
                         "Use ground truth instead of audio generation as generate.lm.gen_gt_samples=true")
                     gen_unprompted_audio = audio
-                    rtf = 1.
+                    rtf.append(1.)
                 else:
                     gen_unprompted_outputs = self.run_generate_step(
                         batch, gen_duration=target_duration, prompt_duration=None,
                         **self.generation_params)
                     gen_unprompted_audio = gen_unprompted_outputs['gen_audio'].cpu()
-                    rtf = gen_unprompted_outputs['rtf']
+                    rtf.append(gen_unprompted_outputs['rtf'])
                 sample_manager.add_samples(
                     gen_unprompted_audio, self.epoch, hydrated_conditions,
-                    ground_truth_wavs=audio, generation_args=sample_generation_params)
+                    ground_truth_wavs=audio, generation_args=sample_generation_params
+                )
 
             if self.cfg.generate.lm.prompted_samples:
                 gen_outputs = self.run_generate_step(
@@ -573,8 +594,9 @@ class MusicGenSolver(base.StandardSolver):
                     gen_audio, self.epoch, hydrated_conditions,
                     prompt_wavs=prompt_audio, ground_truth_wavs=audio,
                     generation_args=sample_generation_params)
+                rtf.append(gen_outputs["rtf"])
 
-            metrics['rtf'] = rtf
+            metrics['rtf'] = sum(rtf) / min(len(rtf), 1)
             metrics = average(metrics)
 
         flashy.distrib.barrier()

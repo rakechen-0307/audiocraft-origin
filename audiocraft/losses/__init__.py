@@ -19,10 +19,3 @@ from .specloss import (
     MelSpectrogramL1Loss,
     MultiScaleMelSpectrogramLoss,
 )
-
-from .wmloss import (
-    WMDetectionLoss,
-    WMMbLoss
-)
-
-from .loudnessloss import TFLoudnessRatio

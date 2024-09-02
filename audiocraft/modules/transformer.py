@@ -120,6 +120,7 @@ class LayerScale(nn.Module):
         device (torch.device or str, optional): Device on which to initialize the module.
         dtype (torch.dtype, optional): dtype to use to initialize the module.
     """
+
     def __init__(self, channels: int, init: float = 1e-4, channel_last: bool = True,
                  device=None, dtype=None):
         super().__init__()
@@ -161,6 +162,7 @@ class StreamingMultiheadAttention(StreamingModule):
         device (torch.device, optional): Device on which to initialize.
         dtype (torch.dtype, optional): dtype to use.
     """
+
     def __init__(self, embed_dim: int, num_heads: int, dropout: float = 0.0, bias: bool = True,
                  causal: bool = False, past_context: tp.Optional[int] = None, custom: bool = False,
                  memory_efficient: bool = False, attention_as_float32: bool = False,
@@ -411,7 +413,8 @@ class StreamingMultiheadAttention(StreamingModule):
                 p = self.dropout if self.training else 0
                 if _efficient_attention_backend == 'torch':
                     x = torch.nn.functional.scaled_dot_product_attention(
-                        q, k, v, is_causal=attn_mask is not None, dropout_p=p)
+                        q, k, v, is_causal=attn_mask is not None, dropout_p=p
+                    )
                 else:
                     x = ops.memory_efficient_attention(q, k, v, attn_mask, p=p)
             else:
@@ -485,6 +488,7 @@ class StreamingTransformerLayer(nn.TransformerEncoderLayer):
         dtype (torch.dtype, optional): dtype to use.
         **kwargs: See `nn.TransformerEncoderLayer`.
     """
+
     def __init__(self, d_model: int, num_heads: int, dim_feedforward: int = 2048, dropout: float = 0.1,
                  bias_ff: bool = True, bias_attn: bool = True, causal: bool = False,
                  past_context: tp.Optional[int] = None, custom: bool = False,
@@ -557,11 +561,14 @@ class StreamingTransformerLayer(nn.TransformerEncoderLayer):
         x = src
         if self.norm_first:
             x = x + self.layer_scale_1(
-                self._sa_block(self.norm1(x), src_mask, src_key_padding_mask))
+                self._sa_block(self.norm1(x), src_mask, src_key_padding_mask)
+            )
             if cross_attention_src is not None:
                 x = x + self.layer_scale_cross(
                     self._cross_attention_block(
-                        self.norm_cross(x), cross_attention_src))
+                        self.norm_cross(x), cross_attention_src
+                    )
+                )
             x = x + self.layer_scale_2(self._ff_block(self.norm2(x)))
         else:
             x = self.norm1(x + self.layer_scale_1(
@@ -611,6 +618,7 @@ class StreamingTransformer(StreamingModule):
         dtype (torch.dtype, optional): dtype to use.
         **kwargs: See `nn.TransformerEncoderLayer`.
     """
+
     def __init__(self, d_model: int, num_heads: int, num_layers: int, dim_feedforward: int = 2048,
                  dropout: float = 0.1, bias_ff: bool = True, bias_attn: bool = True,
                  causal: bool = False, past_context: tp.Optional[int] = None,
@@ -651,7 +659,9 @@ class StreamingTransformer(StreamingModule):
                     causal=causal, past_context=past_context, custom=custom,
                     memory_efficient=memory_efficient, attention_as_float32=attention_as_float32,
                     cross_attention=cross_attention, layer_scale=layer_scale, rope=self.rope,
-                    device=device, dtype=dtype, **kwargs))
+                    device=device, dtype=dtype, **kwargs
+                )
+            )
 
         if self.checkpointing != 'none':
             for layer in self.layers:
@@ -722,7 +732,6 @@ class StreamingTransformer(StreamingModule):
 
 
 # special attention related function
-
 def _verify_xformers_memory_efficient_compat():
     try:
         from xformers.ops import memory_efficient_attention, LowerTriangularMask  # noqa

@@ -60,3 +60,11 @@ dataset/*
 /notebooks
 /local_scripts
 /notes
+/frame_out
+clip/
+logs/
+checkpoints/
+samples/
+*.wav
+*.pt
+test_dts/
