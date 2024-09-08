@@ -29,8 +29,16 @@ conditioners:
       dim: 512
       attribute: description
       normalize: true
-      reduce: false
+      quantize: true # use RVQ quantization
+      n_q: 12
+      bins: 1024
+      kmeans_iters: 50
+      text_p: 0. # probability of using text embed at train time
+      cache_path: null
 
 dataset:
   joint_embed_attributes: [description]
-  n_frames: 0
+  train:
+    merge_text_p: 0.25
+    drop_desc_p: 0.5
+    drop_other_p: 0.5
