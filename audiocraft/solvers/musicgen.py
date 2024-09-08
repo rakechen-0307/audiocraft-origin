@@ -532,7 +532,6 @@ class MusicGenSolver(base.StandardSolver):
                             cond_dict[cond_key] = dict(
                                 text=cond_val.text,
                                 wav=hashlib.sha1(cond_val.wav.contiguous().numpy().data).hexdigest(),
-                                frames=hashlib.sha1(cond_val.frames.contiguous().numpy().data).hexdigest()
                             )
                         else:
                             # if we reached this point, it is not clear how to log the condition
