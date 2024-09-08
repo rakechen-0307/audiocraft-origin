@@ -26,7 +26,7 @@ sd['condition_provider.conditioners.description.output_proj.bias'] = torch.zeros
 # sd['condition_provider.conditioners.description.output_proj.bias'] = torch.zeros((1536), device=device)
 # # end weight modification
 
-with open("/work/u2614323/code/audiocraft-origin/rakec/result/logs/musicgen-small.pt", "wb") as f:
+with open("/work/u2614323/code/audiocraft-origin/rakec/musicgen-small.pt", "wb") as f:
     torch.save(
         dict(
             best_state=dict(
