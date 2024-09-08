@@ -33,7 +33,3 @@ conditioners:
 
 dataset:
   joint_embed_attributes: [description]
-  train:
-    merge_text_p: 0.25
-    drop_desc_p: 0.5
-    drop_other_p: 0.5
