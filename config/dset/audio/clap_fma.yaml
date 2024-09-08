@@ -1,0 +1,10 @@
+# @package __global__
+
+datasource:
+  max_sample_rate: 44100
+  max_channels: 2
+
+  train: egs/clap_fma/train
+  valid: egs/clap_fma/valid
+  evaluate: egs/clap_fma/valid
+  generate: egs/clap_fma/valid

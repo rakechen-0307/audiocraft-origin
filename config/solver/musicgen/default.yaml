@@ -4,7 +4,6 @@ defaults:
   - /solver/default
   - /conditioner: none
   - _self_
-  - /solver/musicgen/evaluation: none
   - override /dset: audio/default
 
 autocast: true
@@ -34,27 +33,28 @@ cache:
   write_shard: 0
   write_num_shards: 1
 
-
 dataset:
   batch_size: 128
   num_workers: 10
   segment_duration: 30
-  min_segment_ratio: 0.8  # lower values such as 0.5 result in generations with a lot of silence.
+  min_segment_ratio: 0.8 # lower values such as 0.5 result in generations with a lot of silence.
   return_info: true
   train:
     num_samples: 1000000 # need a randomly large number here for AudioDataset
   valid:
-    num_samples: 10000
+    num_samples: 120
   generate:
-    num_samples: 50
+    num_samples: 10
+  evaluate:
+    num_samples: 120
 
 metrics:
   fad:
     use_gt: false
     model: tf
     tf:
-      bin: null  # path to local frechet_audio_distance code
-      model_path: //reference/fad/vggish_model.ckpt
+      bin: /work/u2614323/code/audiocraft-origin # path to local frechet_audio_distance code
+      model_path: /work/u2614323/code/audiocraft-origin/rakec/fad/vggish_model.ckpt
   kld:
     use_gt: false
     model: passt
@@ -64,8 +64,8 @@ metrics:
     use_gt: false
     model: clap
     clap:
-      model_path: //reference/clap/music_audioset_epoch_15_esc_90.14.pt
-      model_arch: 'HTSAT-base'
+      model_path: /work/u2614323/code/audiocraft-origin/rakec/clap/music_audioset_epoch_15_esc_90.14.pt
+      model_arch: "HTSAT-base"
       enable_fusion: false
   chroma_cosine:
     use_gt: false
@@ -86,11 +86,11 @@ generate:
     sample_rate: ${sample_rate}
     loudness_headroom_db: 14
   lm:
-    prompted_samples: true
-    unprompted_samples: true
+    prompted_samples: false #TODO: resume with true
+    unprompted_samples: true #TODO: resume with true
     gen_gt_samples: false
-    prompt_duration: null   # if not set, will use dataset.generate.segment_duration / 4
-    gen_duration: null      # if not set, will use dataset.generate.segment_duration
+    prompt_duration: null # if not set, will use dataset.generate.segment_duration / 4
+    gen_duration: null # if not set, will use dataset.generate.segment_duration
     remove_prompts: false
     # generation params
     use_sampling: false

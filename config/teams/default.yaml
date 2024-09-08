@@ -1,10 +1,10 @@
 default:
-  dora_dir: /tmp/audiocraft_${oc.env:USER}
+  dora_dir: /work/u2614323/code/audiocraft-origin/rakec/result/logs/ytcharts-coef3_len10_lr5e-5
   partitions:
     global: debug
     team: debug
-  reference_dir: /tmp
-darwin:  # if we detect we are on a Mac, then most likely we are doing unit testing etc.
+  reference_dir: /work/u2614323/code/audiocraft-origin/rakec/result/logs/ytcharts-coef3_len10_lr5e-5
+darwin: # if we detect we are on a Mac, then most likely we are doing unit testing etc.
   dora_dir: /tmp/audiocraft_${oc.env:USER}
   partitions:
     global: debug

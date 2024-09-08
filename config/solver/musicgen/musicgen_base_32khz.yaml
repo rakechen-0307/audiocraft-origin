@@ -22,34 +22,66 @@ channels: 1
 sample_rate: 32000
 
 deadlock:
-  use: true  # deadlock detection
+  use: true # deadlock detection
 
 dataset:
-  batch_size: 192  # 32 GPUs
-  sample_on_weight: false  # Uniform sampling all the way
-  sample_on_duration: false  # Uniform sampling all the way
+  batch_size: 40
+  num_workers: 1
+  sample_on_weight: false # Uniform sampling all the way
+  sample_on_duration: false # Uniform sampling all the way
 
 generate:
+  every: 5
   lm:
     use_sampling: true
     top_k: 250
     top_p: 0.0
 
+evaluate:
+  every: 10
+  num_workers: 2
+  metrics:
+    base: true
+    fad: true
+    kld: true
+    text_consistency: false
+    chroma_cosine: false
+
+# optim:
+#   epochs: 100
+#   updates_per_epoch: 100
+#   optimizer: dadam
+#   lr: 1
+#   ema:
+#     use: true
+#     updates: 10
+#     device: cuda
+
 optim:
-  epochs: 500
-  optimizer: dadam
-  lr: 1
+  epochs: 100
+  updates_per_epoch: 40
+  lr: 5e-5
+  optimizer: adamw
+  max_norm: 1.0
+  eager_sync: true
+  adam:
+    betas: [0.9, 0.95]
+    weight_decay: 0.1
+    eps: 1e-8
   ema:
     use: true
     updates: 10
-    device: cuda
+    device: cpu
 
 logging:
   log_tensorboard: true
+  log_updates: 10
 
-schedule:
-  lr_scheduler: cosine
-  cosine:
-    warmup: 4000
-    lr_min_ratio: 0.0
-    cycle_length: 1.0
+checkpoint:
+  save_every: 10
+# schedule:
+#   lr_scheduler: cosine
+#   cosine:
+#     warmup: 500
+#     lr_min_ratio: 0.0
+#     cycle_length: 1.0
