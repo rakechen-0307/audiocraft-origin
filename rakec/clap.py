@@ -4,7 +4,7 @@ from audiocraft.models.musicgen import MusicGen, MusicGenCLAP
 from audiocraft.data.audio import audio_write
 from audiocraft.data.audio_utils import convert_audio
 
-model = MusicGenCLAP.get_pretrained('checkpoints/clapemb(v2)')
+model = MusicGenCLAP.get_pretrained('checkpoints/clapemb(ytcharts-v1)')
 model.set_generation_params(duration=30, cfg_coef=0)
 
 sample_dir = "/work/u2614323/code/audiocraft-origin/samples"
