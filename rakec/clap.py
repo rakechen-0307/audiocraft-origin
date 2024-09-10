@@ -1,3 +1,4 @@
+import os
 import torchaudio
 from audiocraft.models.musicgen import MusicGen, MusicGenCLAP
 from audiocraft.data.audio import audio_write
@@ -5,13 +6,12 @@ from audiocraft.data.audio_utils import convert_audio
 
 model = MusicGenCLAP.get_pretrained('checkpoints/clapemb(v2)')
 model.set_generation_params(duration=30, cfg_coef=0)
-wav_files = [
-  "./samples/00001.mp3",
-  "./samples/00011.mp3",
-  "./samples/00021.mp3",
-  "./samples/00031.mp3",
-  "./samples/00041.mp3",
-]
+
+sample_dir = "/work/u2614323/code/audiocraft-origin/samples"
+sample_files = sorted(os.listdir(sample_dir))
+wav_files = []
+for i in range(len(sample_files)):
+    wav_files.append(sample_dir + "/" + sample_files[i])
 
 wavs = []
 for file in wav_files:

@@ -1,9 +1,9 @@
 from audiocraft.utils import export
 from audiocraft import train
-xp = train.main.get_xp_from_sig('e9377c75')
+xp = train.main.get_xp_from_sig('f49a5294')
 export.export_lm(
-    xp.folder / 'checkpoint.th',
-    './checkpoints/clapemb(v2)/state_dict.bin'
+    xp.folder / 'checkpoint.th'
+    './checkpoints/clapemb(ytcharts-v1)/state_dict.bin'
 )
 # You also need to bundle the EnCodec model you used !!
 # Case 1) you trained your own
@@ -13,5 +13,5 @@ export.export_lm(
 # This will actually not dump the actual model, simply a pointer to the right model to download.
 export.export_pretrained_compression_model(
     'facebook/encodec_32khz',
-    './checkpoints/clapemb(v2)/compression_state_dict.bin'
+    './checkpoints/clapemb(ytcharts-v1)/compression_state_dict.bin'
 )
