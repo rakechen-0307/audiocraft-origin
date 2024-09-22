@@ -12,6 +12,7 @@ sample_files = sorted(os.listdir(sample_dir))
 wav_files = []
 for i in range(len(sample_files)):
     wav_files.append(sample_dir + "/" + sample_files[i])
+print(wav_files)
 
 wavs = []
 for file in wav_files:
