@@ -42,11 +42,11 @@ dataset:
   train:
     num_samples: 1000000 # need a randomly large number here for AudioDataset
   valid:
-    num_samples: 120
+    num_samples: 100
   generate:
     num_samples: 10
   evaluate:
-    num_samples: 120
+    num_samples: 100
 
 metrics:
   fad:
