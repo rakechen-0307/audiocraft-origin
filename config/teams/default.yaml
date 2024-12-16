@@ -1,9 +1,9 @@
 default:
-  dora_dir: /work/u2614323/code/audiocraft-origin/rakec/result/logs/spotify-coef3_len8_lr5e-4
+  dora_dir: /work/u2614323/code/audiocraft-origin/rakec/result/logs/spotify-len10_lr5e-4
   partitions:
     global: debug
     team: debug
-  reference_dir: /work/u2614323/code/audiocraft-origin/rakec/result/logs/spotify-coef3_len8_lr5e-4
+  reference_dir: /work/u2614323/code/audiocraft-origin/rakec/result/logs/spotify-len10_lr5e-4
 darwin: # if we detect we are on a Mac, then most likely we are doing unit testing etc.
   dora_dir: /tmp/audiocraft_${oc.env:USER}
   partitions:

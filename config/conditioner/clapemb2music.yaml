@@ -1,7 +1,7 @@
 # @package __global__
 
 classifier_free_guidance:
-  training_dropout: 0.4
+  training_dropout: 0.3
   inference_coef: 3.0
 
 attribute_dropout:
@@ -24,7 +24,7 @@ conditioners:
       model_arch: "HTSAT-base"
       enable_fusion: false
       sample_rate: 48000
-      max_audio_length: 8
+      max_audio_length: 10
       audio_stride: 1
       dim: 512
       attribute: description
