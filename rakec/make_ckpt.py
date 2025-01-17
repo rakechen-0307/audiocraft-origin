@@ -2,7 +2,7 @@ import torch
 from audiocraft.models.musicgen import MusicGen
 
 
-model = MusicGen.get_pretrained('facebook/musicgen-small')
+model = MusicGen.get_pretrained('facebook/musicgen-medium')
 
 sd = model.lm.state_dict()
 
@@ -19,14 +19,14 @@ device = list(sd.values())[0].device
 #     **sd
 # }
 # small
-sd['condition_provider.conditioners.description.output_proj.weight'] = torch.zeros((1024, 512), device=device)
-sd['condition_provider.conditioners.description.output_proj.bias'] = torch.zeros((1024), device=device)
+# sd['condition_provider.conditioners.description.output_proj.weight'] = torch.zeros((1024, 512), device=device)
+# sd['condition_provider.conditioners.description.output_proj.bias'] = torch.zeros((1024), device=device)
 # # medium
-# sd['condition_provider.conditioners.description.output_proj.weight'] = torch.zeros((1536, 1024), device=device)
-# sd['condition_provider.conditioners.description.output_proj.bias'] = torch.zeros((1536), device=device)
+sd['condition_provider.conditioners.description.output_proj.weight'] = torch.zeros((1536, 512), device=device)
+sd['condition_provider.conditioners.description.output_proj.bias'] = torch.zeros((1536), device=device)
 # # end weight modification
 
-with open("/work/u2614323/code/audiocraft-origin/rakec/musicgen-small.pt", "wb") as f:
+with open("/work/u2614323/code/audiocraft-origin/rakec/musicgen-medium.pt", "wb") as f:
     torch.save(
         dict(
             best_state=dict(
