@@ -2,7 +2,7 @@ from audiocraft.utils import export
 from audiocraft import train
 xp = train.main.get_xp_from_sig('2c65b885')
 export.export_lm(
-    xp.folder / 'checkpoint_90.th',
+    xp.folder / 'checkpoint_100.th',
     './checkpoints/clapemb(spotify-v1)/state_dict.bin'
 )
 # You also need to bundle the EnCodec model you used !!
