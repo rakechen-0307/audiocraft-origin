@@ -22,4 +22,4 @@ wav = model.generate_with_clap_embed(wavs)  # generates 3 samples.
 
 for idx, one_wav in enumerate(wav):
     # Will save under {idx}.wav, with loudness normalization at -14 db LUFS.
-    audio_write(f'{file_names[idx].split('.')[0]}', one_wav.cpu(), model.sample_rate, strategy="loudness", loudness_compressor=True)
+    audio_write(f"{file_names[idx].split('.')[0]}", one_wav.cpu(), model.sample_rate, strategy="loudness", loudness_compressor=True)
