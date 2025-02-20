@@ -81,8 +81,6 @@ def load_compression_model(
     cache_dir: tp.Optional[str] = None,
 ):
     pkg = load_compression_model_ckpt(file_or_url_or_id, cache_dir=cache_dir)
-    print("compression model pkg:")
-    print(pkg)
     if 'pretrained' in pkg:
         return CompressionModel.get_pretrained(pkg['pretrained'], device=device)
     cfg = OmegaConf.create(pkg['xp.cfg'])
@@ -112,8 +110,6 @@ def _delete_param(cfg: DictConfig, full_name: str):
 
 def load_lm_model(file_or_url_or_id: tp.Union[Path, str], device='cpu', cache_dir: tp.Optional[str] = None):
     pkg = load_lm_model_ckpt(file_or_url_or_id, cache_dir=cache_dir)
-    print("lm model pkg:")
-    print(pkg)
     cfg = OmegaConf.create(pkg['xp.cfg'])
     cfg.device = str(device)
     if cfg.device == 'cpu':

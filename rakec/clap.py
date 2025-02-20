@@ -11,7 +11,6 @@ sample_dir = "/work/u2614323/code/audiocraft-origin/samples"
 sample_files = sorted(os.listdir(sample_dir))
 wav_files = [sample_dir + "/" + sample_files[0]]
 file_names = [sample_files[0]]
-print(wav_files)
 
 wavs = []
 for file in wav_files:

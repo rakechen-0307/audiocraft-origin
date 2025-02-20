@@ -54,8 +54,6 @@ def export_pretrained_compression_model(pretrained_encodec: str, out_file: tp.Un
             'exported': True,
             'version': __version__,
         }
-    print("pretrained compression model pkg:")
-    print(pkg)
     Path(out_file).parent.mkdir(exist_ok=True, parents=True)
     torch.save(pkg, out_file)
 
@@ -63,8 +61,6 @@ def export_pretrained_compression_model(pretrained_encodec: str, out_file: tp.Un
 def export_lm(checkpoint_path: tp.Union[Path, str], out_file: tp.Union[Path, str]):
     """Export only the best state from the given MusicGen or AudioGen checkpoint.
     """
-    print("checkpoint_path:")
-    print(checkpoint_path)
     pkg = torch.load(checkpoint_path, 'cpu')
     if pkg['fsdp_best_state']:
         best_state = pkg['fsdp_best_state']['model']
