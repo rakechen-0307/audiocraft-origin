@@ -54,6 +54,8 @@ def export_pretrained_compression_model(pretrained_encodec: str, out_file: tp.Un
             'exported': True,
             'version': __version__,
         }
+    print("pretrained compression model pkg:")
+    print(pkg)
     Path(out_file).parent.mkdir(exist_ok=True, parents=True)
     torch.save(pkg, out_file)
 
