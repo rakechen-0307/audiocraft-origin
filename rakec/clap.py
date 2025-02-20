@@ -10,6 +10,7 @@ model.set_generation_params(duration=30, cfg_coef=3.0)
 sample_dir = "/work/u2614323/code/audiocraft-origin/samples"
 sample_files = sorted(os.listdir(sample_dir))
 wav_files = [sample_dir + "/" + sample_files[0]]
+file_names = [sample_files[0]]
 print(wav_files)
 
 wavs = []
@@ -22,4 +23,4 @@ wav = model.generate_with_clap_embed(wavs)  # generates 3 samples.
 
 for idx, one_wav in enumerate(wav):
     # Will save under {idx}.wav, with loudness normalization at -14 db LUFS.
-    audio_write(f'{idx+1}', one_wav.cpu(), model.sample_rate, strategy="loudness", loudness_compressor=True)
+    audio_write(f'{file_names[idx].split('.')[0]}', one_wav.cpu(), model.sample_rate, strategy="loudness", loudness_compressor=True)
