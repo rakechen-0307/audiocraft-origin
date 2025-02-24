@@ -25,7 +25,7 @@ deadlock:
   use: true # deadlock detection
 
 dataset:
-  batch_size: 8
+  batch_size: 40
   num_workers: 1
   sample_on_weight: false # Uniform sampling all the way
   sample_on_duration: false # Uniform sampling all the way
@@ -58,8 +58,8 @@ evaluate:
 #     device: cuda
 
 optim:
-  epochs: 100
-  updates_per_epoch: 60
+  epochs: 50
+  updates_per_epoch: 15
   lr: 5e-5
   optimizer: adamw
   max_norm: 1.0
