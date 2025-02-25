@@ -2,7 +2,7 @@ from audiocraft.utils import export
 from audiocraft import train
 xp = train.main.get_xp_from_sig('8df2c1e9')
 export.export_lm(
-    xp.folder / 'checkpoint_90.th',
+    xp.folder / 'checkpoint_20.th',
     './checkpoints/clapemb(ytcharts-small)/state_dict.bin'
 )
 # You also need to bundle the EnCodec model you used !!
