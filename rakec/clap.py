@@ -4,13 +4,16 @@ from audiocraft.models.musicgen import MusicGen, MusicGenCLAP
 from audiocraft.data.audio import audio_write
 from audiocraft.data.audio_utils import convert_audio
 
-model = MusicGenCLAP.get_pretrained('checkpoints/clapemb(spotify-v1)')
+model = MusicGenCLAP.get_pretrained('checkpoints/clapemb(ytcharts-small)')
 model.set_generation_params(duration=30, cfg_coef=3.0)
 
 sample_dir = "/work/u2614323/code/audiocraft-origin/samples"
 sample_files = sorted(os.listdir(sample_dir))
-wav_files = [sample_dir + "/" + sample_files[0]]
-file_names = [sample_files[0]]
+wav_files = []
+file_names = []
+for i in range(len(sample_files)):
+    wav_files.append(sample_dir + "/" + sample_files[i])
+    file_names.append(sample_files[i])
 
 wavs = []
 for file in wav_files:
