@@ -458,6 +458,8 @@ class LMModel(StreamingModule):
         # With a batch size of 1, this can be slower though.
         cfg_conditions: CFGConditions
         two_step_cfg = self.two_step_cfg if two_step_cfg is None else two_step_cfg
+        print(f"two step cfg: {two_step_cfg}")
+        print(f"condition provider: {self.condition_provider}")
         if conditions:
             null_conditions = ClassifierFreeGuidanceDropout(p=1.0)(conditions)
             if two_step_cfg:
