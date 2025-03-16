@@ -16,7 +16,6 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 music_model = MusicGenCLAP.get_pretrained('checkpoints/clapemb(spotify-small)')
 music_model.set_generation_params(duration=30, cfg_coef=3.0)
-music_model.to(device)
 
 def _get_param_spatial_crop(
     scale, ratio, height, width, num_repeat=10, log_scale=True, switch_hw=False
@@ -160,4 +159,5 @@ for i in range(len(files)):
         with torch.cuda.amp.autocast(True):
             audio_embed = clipclap_model(frames)
     
+    audio_embed = audio_embed.cpu()
     wav = music_model.generate_with_clap_embed([audio_embed])
