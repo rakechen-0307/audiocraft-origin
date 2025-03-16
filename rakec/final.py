@@ -93,18 +93,18 @@ def random_resized_crop(
     )
 
 
-def sample_frame_idx(self, len):
+def sample_frame_idx(len):
     frame_indices = []
 
-    if self.sampling_rate < 0: # tsn sample
-        seg_size = (len - 1) / self.num_frames
-        for i in range(self.num_frames):
+    if 16 < 0: # tsn sample
+        seg_size = (len - 1) / 16
+        for i in range(16):
             frame_indices.append(round(seg_size * i))
-    elif self.sampling_rate * (self.num_frames - 1) + 1 >= len:
-        for i in range(self.num_frames):
-            frame_indices.append(i * self.sampling_rate if i * self.sampling_rate < len else frame_indices[-1])
+    elif 16 * (16 - 1) + 1 >= len:
+        for i in range(16):
+            frame_indices.append(i * 16 if i * 16 < len else frame_indices[-1])
     else:
-        frame_indices = list(range(0, 0 + self.sampling_rate * self.num_frames, self.sampling_rate))
+        frame_indices = list(range(0, 0 + 16 * 16, 16))
 
     return frame_indices
 
