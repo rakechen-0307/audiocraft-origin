@@ -157,6 +157,6 @@ for i in range(len(files)):
 
     with torch.no_grad():
         with torch.cuda.amp.autocast(True):
-            output = clipclap_model(frames)
+            audio_embed = clipclap_model(frames)
     
-    print(output.shape)
+    wav = music_model.generate_with_clap_embed([audio_embed])
