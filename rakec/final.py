@@ -153,4 +153,10 @@ for i in range(len(sample_files)):
 for i in range(len(files)):
     video_file = files[i]
     frames = video_to_frame(video_file)
-    print(frames.shape)
+    frames = frames.unsqueeze(0).to(device)
+
+    with torch.no_grad():
+        with torch.cuda.amp.autocast(True):
+            output = clipclap_model(frames)
+    
+    print(output.shape)
