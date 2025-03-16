@@ -16,6 +16,7 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 music_model = MusicGenCLAP.get_pretrained('checkpoints/clapemb(spotify-small)')
 music_model.set_generation_params(duration=30, cfg_coef=3.0)
+music_model.to(device)
 
 def _get_param_spatial_crop(
     scale, ratio, height, width, num_repeat=10, log_scale=True, switch_hw=False
