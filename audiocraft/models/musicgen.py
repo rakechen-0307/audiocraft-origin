@@ -346,6 +346,7 @@ class MusicGenCLAP(MusicGen):
 
         assert prompt_tokens is None
         tokens = self._generate_tokens(attributes, prompt_tokens, progress)
+        print(tokens.shape)
 
         if return_tokens:
             return self.generate_audio(tokens), tokens

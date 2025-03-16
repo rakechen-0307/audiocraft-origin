@@ -19,7 +19,6 @@ wavs = []
 for file in wav_files:
     wav, sr = torchaudio.load(file)
     wav = convert_audio(wav, sr, model.sample_rate, model.audio_channels)
-    print(wav.shape)
     wavs.append(wav)
 
 wav = model.generate_with_clap_embed(wavs)  # generates 3 samples.
