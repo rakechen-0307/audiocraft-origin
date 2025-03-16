@@ -161,3 +161,5 @@ for i in range(len(files)):
     
     audio_embed = audio_embed.cpu()
     wav = music_model.generate_with_clap_embed([audio_embed])
+
+    print(wav.shape)
