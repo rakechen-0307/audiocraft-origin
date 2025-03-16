@@ -150,6 +150,7 @@ for i in range(len(sample_files)):
     files.append(sample_dir + "/" + sample_files[i])
     file_names.append(sample_files[i])
 
+audio = []
 for i in range(len(files)):
     video_file = files[i]
     frames = video_to_frame(video_file)
@@ -160,6 +161,10 @@ for i in range(len(files)):
             audio_embed = clipclap_model(frames)
     
     audio_embed = audio_embed.cpu()
-    wav = music_model.generate_with_clap_embed([audio_embed])
+    audio.append(audio_embed)
 
-    print(wav.shape)
+wav = music_model.generate_with_clap_embed(audio)
+
+for idx, one_wav in enumerate(wav):
+    # Will save under {idx}.wav, with loudness normalization at -14 db LUFS.
+    audio_write(f"{file_names[idx].split('.')[0]}", one_wav.cpu(), music_model.sample_rate, strategy="loudness", loudness_compressor=True)
