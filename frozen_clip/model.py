@@ -7,8 +7,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from vision_transformer import QuickGELU, Attention
-from weight_loaders import weight_loader_fn_dict
+from frozen_clip.vision_transformer import QuickGELU, Attention
+from frozen_clip.weight_loaders import weight_loader_fn_dict
 from vision_transformer import (
     VisionTransformer2D, TransformerDecoderLayer,
     model_to_fp16, vit_presets,

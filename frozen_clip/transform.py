@@ -14,8 +14,8 @@ import torchvision.transforms.functional as F
 from PIL import Image, ImageFilter
 from torchvision import transforms
 
-from rand_augment import rand_augment_transform
-from random_erasing import RandomErasing
+from frozen_clip.rand_augment import rand_augment_transform
+from frozen_clip.random_erasing import RandomErasing
 
 _pil_interpolation_to_str = {
     Image.NEAREST: "PIL.Image.NEAREST",
