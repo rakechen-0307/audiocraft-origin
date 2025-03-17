@@ -1480,7 +1480,9 @@ class ConditioningProvider(nn.Module):
             print(f"wavs(before): {wavs}")
             stacked_wavs = pad_sequence(wavs[attribute]).to(self.device)
             print(f"wavs(after): {stacked_wavs}")
+            print(stacked_wavs.shape)
             stacked_wavs = einops.rearrange(stacked_wavs, "(c t) b -> b c t", c=channels)
+            print(stacked_wavs.shape)
             stacked_sample_rates = sample_rates[attribute]
             stacked_lengths = torch.cat(lengths[attribute]).to(self.device)
             assert stacked_lengths.size(0) == stacked_wavs.size(0)
