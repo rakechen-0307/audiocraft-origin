@@ -1338,10 +1338,9 @@ class ConditioningProvider(nn.Module):
             f"got {text.keys(), wavs.keys(), joint_embeds.keys()}"
         )
 
-        print(chain(text.items(), wavs.items(), joint_embeds.items()))
         for attribute, batch in chain(text.items(), wavs.items(), joint_embeds.items()):
-            # print(f"attribute: {attribute}")
-            # print(f"batch: {batch}")
+            print(f"attribute: {attribute}")
+            print(f"batch: {batch}")
             output[attribute] = self.conditioners[attribute].tokenize(batch)
         return output
 
