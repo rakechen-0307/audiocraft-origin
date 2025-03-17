@@ -166,7 +166,7 @@ for i in range(len(files)):
             audio_embed = clipclap_model(frames)
     
     audio_embed = audio_embed.cpu()
-    null_condition = torch.zeros(1, 1, sample_rate*seg_length)
+    null_condition = torch.zeros(1, sample_rate*seg_length)
     null_embed = clap_conditioner.clap.get_audio_embedding_from_data(null_condition, use_tensor=True)
 
     print(f"audio embed: {audio_embed.shape}")
