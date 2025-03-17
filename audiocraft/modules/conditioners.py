@@ -1102,6 +1102,7 @@ class CLAPEmbeddingConditioner(JointEmbeddingConditioner):
         with torch.no_grad():
             wav = self._preprocess_wav(wav, length, sample_rates)
             B, T = wav.shape
+            print(f"max frames: {self.clap_max_frames}")
             if T >= self.clap_max_frames:
                 wav = wav.unfold(-1, self.clap_max_frames, self.clap_stride)  # [B, F, T]
             else:
@@ -1143,7 +1144,7 @@ class CLAPEmbeddingConditioner(JointEmbeddingConditioner):
         with self.autocast:
             B = x.wav.shape[0]
             embed, empty_idx = self._get_embed(x)
-            print(embed.shape)
+            # print(embed.shape)
             # print(empty_idx)
 
             out_embed = self.output_proj(embed).view(B, -1, self.output_dim)
