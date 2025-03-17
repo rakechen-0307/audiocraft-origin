@@ -1139,6 +1139,7 @@ class CLAPEmbeddingConditioner(JointEmbeddingConditioner):
         return embed, empty_idx
 
     def forward(self, x: JointEmbedCondition) -> ConditionType:
+        print(f"output: {x}")
         with self.autocast:
             B = x.wav.shape[0]
             embed, empty_idx = self._get_embed(x)
@@ -1340,8 +1341,6 @@ class ConditioningProvider(nn.Module):
 
         for attribute, batch in chain(text.items(), wavs.items(), joint_embeds.items()):
             output[attribute] = self.conditioners[attribute].tokenize(batch)
-            print(f"output: {output[attribute]}")
-            print(output[attribute].wav.shape)
         return output
 
     def forward(self, tokenized: tp.Dict[str, tp.Any]) -> tp.Dict[str, ConditionType]:
