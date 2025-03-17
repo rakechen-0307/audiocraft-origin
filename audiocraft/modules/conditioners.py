@@ -1101,16 +1101,14 @@ class CLAPEmbeddingConditioner(JointEmbeddingConditioner):
         """
         with torch.no_grad():
             wav = self._preprocess_wav(wav, length, sample_rates)
-            # print(self.clap_max_frames)
+            print(self.clap_max_frames)
             # print(self.clap_stride)
             B, T = wav.shape
             if T >= self.clap_max_frames:
                 wav = wav.unfold(-1, self.clap_max_frames, self.clap_stride)  # [B, F, T]
             else:
                 wav = wav.view(-1, 1, T)  # [B, F, T] with F=1
-            # print(wav[0, 0, :])
-            # print(wav[0, 1, :])
-            # print(wav[0, 2, :])
+            print(wav.shape)
             wav = einops.rearrange(wav, 'b f t -> (b f) t')
             embed_list = []
             for i in range(0, wav.size(0), self.batch_size):

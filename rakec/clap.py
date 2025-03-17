@@ -4,6 +4,8 @@ from audiocraft.models.musicgen import MusicGen, MusicGenCLAP
 from audiocraft.data.audio import audio_write
 from audiocraft.data.audio_utils import convert_audio
 
+seg_len = 10
+
 model = MusicGenCLAP.get_pretrained('checkpoints/clapemb(spotify-small-80)')
 model.set_generation_params(duration=30, cfg_coef=3.0)
 
@@ -16,9 +18,10 @@ for i in range(len(sample_files)):
     file_names.append(sample_files[i])
 
 wavs = []
-for file in wav_files:
+for file in [wav_files[0]]:
     wav, sr = torchaudio.load(file)
     wav = convert_audio(wav, sr, model.sample_rate, model.audio_channels)
+    print(wav.shape)
     wavs.append(wav)
 
 wav = model.generate_with_clap_embed(wavs)  # generates 3 samples.
