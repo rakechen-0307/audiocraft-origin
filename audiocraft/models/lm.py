@@ -363,9 +363,10 @@ class LMModel(StreamingModule):
         else:
             assert isinstance(cfg_conditions, dict)
             condition_tensors = cfg_conditions
-            print(condition_tensors)
-            print(condition_tensors['description'][0].shape)
-            print(condition_tensors['description'][1].shape)
+            # print(condition_tensors)
+            print(condition_tensors['description'][:, 0, :])
+            print(condition_tensors['description'][:, 1, :])
+            print(condition_tensors['description'][:, 2, :])
             if condition_tensors:
                 # Preparing for CFG, predicting both conditional and unconditional logits.
                 sequence = torch.cat([sequence, sequence], dim=0)
@@ -469,7 +470,9 @@ class LMModel(StreamingModule):
                     self.condition_provider(self.condition_provider.tokenize(null_conditions)),
                 )
             else:
+                print(f"conditions(before): {conditions}")
                 conditions = conditions + null_conditions
+                print(f"conditions(after): {conditions}")
                 tokenized = self.condition_provider.tokenize(conditions)
                 cfg_conditions = self.condition_provider(tokenized)
         else:
