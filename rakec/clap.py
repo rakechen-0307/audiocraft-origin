@@ -5,7 +5,7 @@ from audiocraft.data.audio import audio_write
 from audiocraft.data.audio_utils import convert_audio
 
 model = MusicGenCLAP.get_pretrained('checkpoints/clapemb(spotify-small)')
-model.set_generation_params(duration=10, cfg_coef=3.0)
+model.set_generation_params(duration=30, cfg_coef=3.0)
 
 sample_dir = "/work/u2614323/code/audiocraft-origin/samples/audios"
 sample_files = sorted(os.listdir(sample_dir))
