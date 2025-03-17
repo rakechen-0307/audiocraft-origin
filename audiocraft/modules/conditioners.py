@@ -1111,7 +1111,7 @@ class CLAPEmbeddingConditioner(JointEmbeddingConditioner):
             embed_list = []
             for i in range(0, wav.size(0), self.batch_size):
                 _wav = wav[i:i + self.batch_size, ...]
-                print(_wav)
+                print(_wav.shape)
                 _embed = self.clap.get_audio_embedding_from_data(_wav, use_tensor=True)
                 embed_list.append(_embed)
             embed = torch.cat(embed_list, dim=0)
