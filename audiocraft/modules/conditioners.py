@@ -1332,7 +1332,7 @@ class ConditioningProvider(nn.Module):
         text = self._collate_text(inputs)
         wavs = self._collate_wavs(inputs)
         joint_embeds = self._collate_joint_embeds(inputs)
-        print(f"joint embed: {joint_embeds}")
+        print(f"joint embed: {joint_embeds['description'].wav.shape}")
 
         assert set(text.keys() | wavs.keys() | joint_embeds.keys()).issubset(set(self.conditioners.keys())), (
             f"Got an unexpected attribute! Expected {self.conditioners.keys()}, ",
