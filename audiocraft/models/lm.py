@@ -364,12 +364,12 @@ class LMModel(StreamingModule):
             assert isinstance(cfg_conditions, dict)
             condition_tensors = cfg_conditions
             # print(condition_tensors)
-            print(condition_tensors['description'][0][0, 0, :])
-            print(condition_tensors['description'][0][0, 1, :])
-            print(condition_tensors['description'][0][0, 2, :])
-            print(condition_tensors['description'][0][1, 0, :])
-            print(condition_tensors['description'][0][1, 1, :])
-            print(condition_tensors['description'][0][1, 2, :])
+            # print(condition_tensors['description'][0][0, 0, :])
+            # print(condition_tensors['description'][0][0, 1, :])
+            # print(condition_tensors['description'][0][0, 2, :])
+            # print(condition_tensors['description'][0][1, 0, :])
+            # print(condition_tensors['description'][0][1, 1, :])
+            # print(condition_tensors['description'][0][1, 2, :])
             if condition_tensors:
                 # Preparing for CFG, predicting both conditional and unconditional logits.
                 sequence = torch.cat([sequence, sequence], dim=0)
@@ -463,8 +463,6 @@ class LMModel(StreamingModule):
         # With a batch size of 1, this can be slower though.
         cfg_conditions: CFGConditions
         two_step_cfg = self.two_step_cfg if two_step_cfg is None else two_step_cfg
-        print(f"two step cfg: {two_step_cfg}")
-        print(f"condition provider: {self.condition_provider}")
         if conditions:
             null_conditions = ClassifierFreeGuidanceDropout(p=1.0)(conditions)
             if two_step_cfg:
@@ -473,9 +471,8 @@ class LMModel(StreamingModule):
                     self.condition_provider(self.condition_provider.tokenize(null_conditions)),
                 )
             else:
-                print(f"conditions(before): {conditions}")
                 conditions = conditions + null_conditions
-                print(f"conditions(after): {conditions}")
+                print(f"conditions: {conditions}")
                 tokenized = self.condition_provider.tokenize(conditions)
                 cfg_conditions = self.condition_provider(tokenized)
         else:
