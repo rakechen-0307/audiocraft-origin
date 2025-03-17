@@ -1139,7 +1139,7 @@ class CLAPEmbeddingConditioner(JointEmbeddingConditioner):
         return embed, empty_idx
 
     def forward(self, x: JointEmbedCondition) -> ConditionType:
-        print(f"output: {x}")
+        print(f"output: {x.wav.shape}")
         with self.autocast:
             B = x.wav.shape[0]
             embed, empty_idx = self._get_embed(x)
