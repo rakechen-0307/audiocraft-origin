@@ -366,8 +366,6 @@ class MusicGenCLAP(MusicGen):
             melody_wavs (torch.Tensor, optional): A batch of waveforms
                 used as melody conditioning. Defaults to None.
         """
-        for wav in wavs:
-            print(wav[None].shape)
         attributes = [
             ConditioningAttributes(
                 joint_embed={

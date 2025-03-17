@@ -1339,6 +1339,8 @@ class ConditioningProvider(nn.Module):
         )
 
         for attribute, batch in chain(text.items(), wavs.items(), joint_embeds.items()):
+            print(f"attribute: {attribute}")
+            print(f"batch: {batch}")
             output[attribute] = self.conditioners[attribute].tokenize(batch)
         return output
 
