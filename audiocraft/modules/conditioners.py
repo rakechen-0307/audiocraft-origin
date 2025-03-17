@@ -1442,7 +1442,7 @@ class ConditioningProvider(nn.Module):
         Returns:
             A dictionary mapping an attribute name to joint embeddings.
         """
-        print(len(samples))
+        # print(len(samples))
         print(f"samples: {samples}")
 
         texts = defaultdict(list)
@@ -1456,6 +1456,7 @@ class ConditioningProvider(nn.Module):
         out = {}
         for sample in samples:
             for attribute in self.joint_embed_conditions:
+                print(f"attribute: {attribute}")
                 wav, text, length, sample_rate, path, seek_time = sample.joint_embed[attribute]
                 assert wav.dim() == 3
                 if channels == 0:
