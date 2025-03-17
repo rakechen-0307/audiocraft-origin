@@ -1339,10 +1339,8 @@ class ConditioningProvider(nn.Module):
         )
 
         for attribute, batch in chain(text.items(), wavs.items(), joint_embeds.items()):
-            print(f"attribute: {attribute}")
-            print(f"batch: {batch}")
-            print(batch.wav.shape)
             output[attribute] = self.conditioners[attribute].tokenize(batch)
+            print(f"output: {output[attribute]}")
         return output
 
     def forward(self, tokenized: tp.Dict[str, tp.Any]) -> tp.Dict[str, ConditionType]:
