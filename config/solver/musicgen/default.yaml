@@ -44,7 +44,7 @@ dataset:
   valid:
     num_samples: 32
   generate:
-    num_samples: 15
+    num_samples: 10
   evaluate:
     num_samples: 32
 
