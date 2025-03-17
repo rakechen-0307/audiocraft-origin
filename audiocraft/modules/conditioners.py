@@ -1142,8 +1142,8 @@ class CLAPEmbeddingConditioner(JointEmbeddingConditioner):
         with self.autocast:
             B = x.wav.shape[0]
             embed, empty_idx = self._get_embed(x)
-            print(embed.shape)
-            print(empty_idx)
+            # print(embed.shape)
+            # print(empty_idx)
 
             out_embed = self.output_proj(embed).view(B, -1, self.output_dim)
 
