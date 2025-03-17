@@ -1101,7 +1101,7 @@ class CLAPEmbeddingConditioner(JointEmbeddingConditioner):
         """
         with torch.no_grad():
             wav = self._preprocess_wav(wav, length, sample_rates)
-            print(self.clap_max_frames)
+            # print(self.clap_max_frames)
             # print(self.clap_stride)
             B, T = wav.shape
             if T >= self.clap_max_frames:
