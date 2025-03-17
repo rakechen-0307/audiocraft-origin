@@ -1107,11 +1107,9 @@ class CLAPEmbeddingConditioner(JointEmbeddingConditioner):
             else:
                 wav = wav.view(-1, 1, T)  # [B, F, T] with F=1
             wav = einops.rearrange(wav, 'b f t -> (b f) t')
-            print(wav)
             embed_list = []
             for i in range(0, wav.size(0), self.batch_size):
                 _wav = wav[i:i + self.batch_size, ...]
-                print(_wav.shape)
                 _embed = self.clap.get_audio_embedding_from_data(_wav, use_tensor=True)
                 embed_list.append(_embed)
             embed = torch.cat(embed_list, dim=0)
@@ -1144,8 +1142,6 @@ class CLAPEmbeddingConditioner(JointEmbeddingConditioner):
         with self.autocast:
             B = x.wav.shape[0]
             embed, empty_idx = self._get_embed(x)
-            print(embed)
-            # print(empty_idx)
 
             out_embed = self.output_proj(embed).view(B, -1, self.output_dim)
 
@@ -1442,9 +1438,6 @@ class ConditioningProvider(nn.Module):
         Returns:
             A dictionary mapping an attribute name to joint embeddings.
         """
-        # print(len(samples))
-        # print(f"samples: {samples}")
-
         texts = defaultdict(list)
         wavs = defaultdict(list)
         lengths = defaultdict(list)
@@ -1456,7 +1449,6 @@ class ConditioningProvider(nn.Module):
         out = {}
         for sample in samples:
             for attribute in self.joint_embed_conditions:
-                # print(f"attribute: {attribute}")
                 wav, text, length, sample_rate, path, seek_time = sample.joint_embed[attribute]
                 assert wav.dim() == 3
                 if channels == 0:
@@ -1473,16 +1465,11 @@ class ConditioningProvider(nn.Module):
                 seek_times[attribute].extend(seek_time)
 
         for attribute in self.joint_embed_conditions:
-            # print(f"attribute: {attribute}")
             stacked_texts = texts[attribute]
             stacked_paths = paths[attribute]
             stacked_seek_times = seek_times[attribute]
-            # print(f"wavs(before): {wavs}")
             stacked_wavs = pad_sequence(wavs[attribute]).to(self.device)
-            # print(f"wavs(after): {stacked_wavs}")
-            # print(stacked_wavs.shape)
             stacked_wavs = einops.rearrange(stacked_wavs, "(c t) b -> b c t", c=channels)
-            # print(stacked_wavs.shape)
             stacked_sample_rates = sample_rates[attribute]
             stacked_lengths = torch.cat(lengths[attribute]).to(self.device)
             assert stacked_lengths.size(0) == stacked_wavs.size(0)

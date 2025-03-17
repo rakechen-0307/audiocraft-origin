@@ -10,12 +10,11 @@ from audiocraft.models.musicgen import MusicGenCLAP
 from audiocraft.data.audio import audio_write
 from audiocraft.data.audio_utils import convert_audio
 
+seg_length = 10
+sample_rate = 48000
 mean = torch.Tensor([0.48145466, 0.4578275, 0.40821073])
 std = torch.Tensor([0.26862954, 0.26130258, 0.27577711])
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-
-music_model = MusicGenCLAP.get_pretrained('checkpoints/clapemb(spotify-small)')
-music_model.set_generation_params(duration=30, cfg_coef=3.0)
 
 def _get_param_spatial_crop(
     scale, ratio, height, width, num_repeat=10, log_scale=True, switch_hw=False
@@ -124,7 +123,12 @@ def video_to_frame(video_file):
     frames = random_resized_crop(
         frames, 224, 224,
     )
-    return frames   
+    return frames
+
+
+music_model = MusicGenCLAP.get_pretrained('checkpoints/clapemb(spotify-small)')
+music_model.set_generation_params(duration=30, cfg_coef=3.0)
+clap_conditioner = music_model.lm.condition_provider
 
 clipclap_model = EVLTransformer(
     num_frames=16,
@@ -140,7 +144,7 @@ clipclap_model = EVLTransformer(
 clipclap_model.to(device)
 state_dict = torch.load("./frozen_clip/checkpoint/best.pt", map_location='cpu')
 msg = clipclap_model.load_state_dict(state_dict, strict=False)
-print(msg)
+# print(msg)
 
 sample_dir = "/work/u2614323/code/audiocraft-origin/samples/videos"
 sample_files = sorted(os.listdir(sample_dir))
@@ -161,10 +165,15 @@ for i in range(len(files)):
             audio_embed = clipclap_model(frames)
     
     audio_embed = audio_embed.cpu()
-    audio.append(audio_embed)
+    null_condition = torch.zeros(1, 1, sample_rate*seg_length)
+    null_embed = clap_conditioner._get_embed(null_condition)
 
-wav = music_model.generate_with_clap_embed(audio)
+    print(f"audio embed: {audio_embed.shape}")
+    print(f"null embed: {null_embed.shape}")
 
+
+"""
 for idx, one_wav in enumerate(wav):
     # Will save under {idx}.wav, with loudness normalization at -14 db LUFS.
     audio_write(f"{file_names[idx].split('.')[0]}", one_wav.cpu(), music_model.sample_rate, strategy="loudness", loudness_compressor=True)
+"""
