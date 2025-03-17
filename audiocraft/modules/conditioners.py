@@ -1100,7 +1100,9 @@ class CLAPEmbeddingConditioner(JointEmbeddingConditioner):
             torch.Tensor: Audio embedding of shape [B, F, D], F being the number of chunks, D the dimension.
         """
         with torch.no_grad():
+            print(f"wav(before): {wav}")
             wav = self._preprocess_wav(wav, length, sample_rates)
+            print(f"wav(after): {wav}")
             B, T = wav.shape
             if T >= self.clap_max_frames:
                 wav = wav.unfold(-1, self.clap_max_frames, self.clap_stride)  # [B, F, T]
