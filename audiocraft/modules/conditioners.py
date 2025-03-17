@@ -1106,7 +1106,9 @@ class CLAPEmbeddingConditioner(JointEmbeddingConditioner):
                 wav = wav.unfold(-1, self.clap_max_frames, self.clap_stride)  # [B, F, T]
             else:
                 wav = wav.view(-1, 1, T)  # [B, F, T] with F=1
-            print(wav.shape)
+            print(wav[0, 0, :])
+            print(wav[0, 1, :])
+            print(wav[0, 2, :])
             wav = einops.rearrange(wav, 'b f t -> (b f) t')
             embed_list = []
             for i in range(0, wav.size(0), self.batch_size):
