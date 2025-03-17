@@ -1456,7 +1456,7 @@ class ConditioningProvider(nn.Module):
         out = {}
         for sample in samples:
             for attribute in self.joint_embed_conditions:
-                print(f"attribute: {attribute}")
+                # print(f"attribute: {attribute}")
                 wav, text, length, sample_rate, path, seek_time = sample.joint_embed[attribute]
                 assert wav.dim() == 3
                 if channels == 0:
@@ -1473,6 +1473,7 @@ class ConditioningProvider(nn.Module):
                 seek_times[attribute].extend(seek_time)
 
         for attribute in self.joint_embed_conditions:
+            print(f"attribute: {attribute}")
             stacked_texts = texts[attribute]
             stacked_paths = paths[attribute]
             stacked_seek_times = seek_times[attribute]
