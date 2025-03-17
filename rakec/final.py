@@ -128,8 +128,7 @@ def video_to_frame(video_file):
 
 music_model = MusicGenCLAP.get_pretrained('checkpoints/clapemb(spotify-small-80)')
 music_model.set_generation_params(duration=30, cfg_coef=3.0)
-clap_conditioner = music_model.lm.condition_provider
-print(clap_conditioner)
+clap_conditioner = music_model.lm.condition_provider.description
 
 clipclap_model = EVLTransformer(
     num_frames=16,
