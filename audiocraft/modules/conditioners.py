@@ -1473,7 +1473,7 @@ class ConditioningProvider(nn.Module):
                 seek_times[attribute].extend(seek_time)
 
         for attribute in self.joint_embed_conditions:
-            print(f"attribute: {attribute}")
+            # print(f"attribute: {attribute}")
             stacked_texts = texts[attribute]
             stacked_paths = paths[attribute]
             stacked_seek_times = seek_times[attribute]
@@ -1488,6 +1488,8 @@ class ConditioningProvider(nn.Module):
                 text=stacked_texts, wav=stacked_wavs,
                 length=stacked_lengths, sample_rate=stacked_sample_rates,
                 path=stacked_paths, seek_time=stacked_seek_times)
+            
+            print(out[attribute])
 
         return out
 
