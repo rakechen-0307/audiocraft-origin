@@ -24,7 +24,7 @@ conditioners:
       model_arch: "HTSAT-base"
       enable_fusion: false
       sample_rate: 48000
-      max_audio_length: 8
+      max_audio_length: 10
       audio_stride: 1
       dim: 512
       attribute: description
