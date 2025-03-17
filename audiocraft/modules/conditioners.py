@@ -1103,6 +1103,7 @@ class CLAPEmbeddingConditioner(JointEmbeddingConditioner):
             wav = self._preprocess_wav(wav, length, sample_rates)
             B, T = wav.shape
             print(f"max frames: {self.clap_max_frames}")
+            print(f"stride: {self.clap_stride}")
             if T >= self.clap_max_frames:
                 wav = wav.unfold(-1, self.clap_max_frames, self.clap_stride)  # [B, F, T]
             else:
