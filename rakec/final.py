@@ -165,13 +165,18 @@ for i in range(len(files)):
         with torch.cuda.amp.autocast(True):
             audio_embed = clipclap_model(frames)
     
-    audio_embed = audio_embed.cpu()
+    audio_embed = audio_embed.cpu().unsqueeze(0)
     null_condition = torch.zeros(1, sample_rate*seg_length)
-    null_embed = clap_conditioner.clap.get_audio_embedding_from_data(null_condition, use_tensor=True)
+    null_embed = clap_conditioner.clap.get_audio_embedding_from_data(null_condition, use_tensor=True).unsqueeze(0)
 
-    print(f"audio embed: {audio_embed.shape}")
-    print(f"null embed: {null_embed.shape}")
+    embed = torch.cat((audio_embed, null_embed), dim=0)
+    B = embed.shape[0]
+    out_embed = clap_conditioner.output_proj(embed).view(B, -1, clap_conditioner.output_dim)
 
+    if clap_conditioner.normalize:
+        out_embed = torch.nn.functional.normalize(out_embed, p=2.0, dim=-1)
+
+    
 
 """
 for idx, one_wav in enumerate(wav):
