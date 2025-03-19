@@ -1142,8 +1142,6 @@ class CLAPEmbeddingConditioner(JointEmbeddingConditioner):
         with self.autocast:
             B = x.wav.shape[0]
             embed, empty_idx = self._get_embed(x)
-            print(embed.shape)
-            print(empty_idx)
 
             out_embed = self.output_proj(embed).view(B, -1, self.output_dim)
 
@@ -1151,7 +1149,6 @@ class CLAPEmbeddingConditioner(JointEmbeddingConditioner):
                 out_embed = torch.nn.functional.normalize(out_embed, p=2.0, dim=-1)
 
             mask = torch.ones(*out_embed.shape[:2], device=out_embed.device)
-            print(mask.shape)
             mask[empty_idx, :] = 0  # zero-out index where the input is non-existant
             out_embed = (out_embed * mask.unsqueeze(-1))
 

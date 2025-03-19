@@ -170,12 +170,18 @@ for i in range(len(files)):
     null_embed = clap_conditioner.clap.get_audio_embedding_from_data(null_condition, use_tensor=True).unsqueeze(0)
 
     embed = torch.cat((audio_embed, null_embed), dim=0)
+    empty_idx = torch.Tensor([1])
     B = embed.shape[0]
     out_embed = clap_conditioner.output_proj(embed).view(B, -1, clap_conditioner.output_dim)
 
     if clap_conditioner.normalize:
         out_embed = torch.nn.functional.normalize(out_embed, p=2.0, dim=-1)
 
+    mask = torch.ones(*out_embed.shape[:2], device=out_embed.device)
+    mask[empty_idx, :] = 0  # zero-out index where the input is non-existant
+    out_embed = (out_embed * mask.unsqueeze(-1))
+
+    
     
 
 """
