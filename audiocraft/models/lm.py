@@ -469,8 +469,6 @@ class LMModel(StreamingModule):
                 cfg_conditions = self.condition_provider(tokenized)
         else:
             cfg_conditions = {}
-        
-        print(f"cfg cond: {cfg_conditions}")
 
         if prompt is None:
             assert num_samples > 0
@@ -551,8 +549,7 @@ class LMModel(StreamingModule):
     @torch.no_grad()
     def generate_with_embed(self,
                  prompt: tp.Optional[torch.Tensor] = None,
-                 embed = torch.Tensor([]),
-                 empty_idx = torch.Tensor([]),
+                 cfg_conditions = {},
                  max_gen_len: int = 256,
                  use_sampling: bool = True,
                  temp: float = 1.0,

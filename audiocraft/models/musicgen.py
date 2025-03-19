@@ -250,6 +250,9 @@ class MusicGen(BaseGenModel):
         if progress:
             callback = _progress_callback
 
+        print(self.duration)
+        print(self.max_duration)
+
         if self.duration <= self.max_duration:
             # generate by sampling from LM, simple case.
             with self.autocast:
@@ -306,6 +309,28 @@ class MusicGen(BaseGenModel):
 
             gen_tokens = torch.cat(all_tokens, dim=-1)
         return gen_tokens
+
+    def _generate_tokens_with_conditions(self, cfg_conditions,
+                         prompt_tokens: tp.Optional[torch.Tensor], progress: bool = False) -> torch.Tensor:
+        total_gen_len = int(self.duration * self.frame_rate)
+        max_prompt_len = int(min(self.duration, self.max_duration) * self.frame_rate)
+        current_gen_offset: int = 0
+
+        def _progress_callback(generated_tokens: int, tokens_to_generate: int):
+            generated_tokens += current_gen_offset
+            if self._progress_callback is not None:
+                # Note that total_gen_len might be quite wrong depending on the
+                # codebook pattern used, but with delay it is almost accurate.
+                self._progress_callback(generated_tokens, tokens_to_generate)
+            else:
+                print(f'{generated_tokens: 6d} / {tokens_to_generate: 6d}', end='\r')
+
+        if prompt_tokens is not None:
+            assert max_prompt_len >= prompt_tokens.shape[-1], \
+                "Prompt is longer than audio to generate" 
+        
+
+
 
 class MusicGenCLAP(MusicGen):
     @staticmethod

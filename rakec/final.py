@@ -181,6 +181,12 @@ for i in range(len(files)):
     mask[empty_idx, :] = 0  # zero-out index where the input is non-existant
     out_embed = (out_embed * mask.unsqueeze(-1))
 
+    cfg_conditions = {
+        'description': (
+            out_embed, mask
+        )
+    }
+
     
     
 
