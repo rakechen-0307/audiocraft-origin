@@ -166,7 +166,7 @@ for i in range(1):
         with torch.cuda.amp.autocast(True):
             audio_embed = clipclap_model(frames)
     
-    audio_embed = audio_embed.cpu().unsqueeze(0)
+    audio_embed = audio_embed.unsqueeze(0)
     null_condition = torch.zeros(1, sample_rate*seg_length)
     null_embed = clap_conditioner.clap.get_audio_embedding_from_data(null_condition, use_tensor=True).unsqueeze(0)
 
