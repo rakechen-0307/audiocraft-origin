@@ -189,8 +189,7 @@ for i in range(1):
     }
 
     wav = music_model.generate_with_conditions(cfg_conditions)
-    print(wav.shape)
-    audio_write(f"{file_names[i].split('.')[0]}", wav.cpu(), music_model.sample_rate, strategy="loudness", loudness_compressor=True)
+    audio_write(f"{file_names[i].split('.')[0]}", wav.cpu().squeeze(0), music_model.sample_rate, strategy="loudness", loudness_compressor=True)
     
 
 """
