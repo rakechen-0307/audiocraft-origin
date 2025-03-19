@@ -250,9 +250,6 @@ class MusicGen(BaseGenModel):
         if progress:
             callback = _progress_callback
 
-        print(self.duration)
-        print(self.max_duration)
-
         if self.duration <= self.max_duration:
             # generate by sampling from LM, simple case.
             with self.autocast:
@@ -328,8 +325,17 @@ class MusicGen(BaseGenModel):
         if prompt_tokens is not None:
             assert max_prompt_len >= prompt_tokens.shape[-1], \
                 "Prompt is longer than audio to generate" 
+            
+        callback = None
+        if progress:
+            callback = _progress_callback
         
-
+        with self.autocast:
+            gen_tokens = self.lm.generate_with_embed(
+                prompt_tokens, cfg_conditions,
+                callback=callback, max_gen_len=total_gen_len, **self.generation_params 
+            )
+        return gen_tokens
 
 
 class MusicGenCLAP(MusicGen):
