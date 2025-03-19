@@ -156,7 +156,8 @@ for i in range(len(sample_files)):
     file_names.append(sample_files[i])
 
 audio = []
-for i in range(len(files)):
+# for i in range(len(files)):
+for i in range(1):
     video_file = files[i]
     frames = video_to_frame(video_file)
     frames = frames.unsqueeze(0).to(device)
@@ -187,7 +188,9 @@ for i in range(len(files)):
         )
     }
 
-    
+    wav = music_model.generate_with_conditions(cfg_conditions)
+    print(wav.shape)
+    audio_write(f"{file_names[i].split('.')[0]}", wav.cpu(), music_model.sample_rate, strategy="loudness", loudness_compressor=True)
     
 
 """

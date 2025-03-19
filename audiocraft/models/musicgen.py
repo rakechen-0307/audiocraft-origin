@@ -382,6 +382,19 @@ class MusicGenCLAP(MusicGen):
             return self.generate_audio(tokens), tokens
 
         return self.generate_audio(tokens)
+    
+    def generate_with_conditions(
+        self,
+        cfg_conditions,
+        progress: bool = False,
+        return_tokens: bool = False
+    ) -> tp.Union[torch.Tensor, tp.Tuple[torch.Tensor, torch.Tensor]]:
+        
+        tokens = self._generate_tokens_with_conditions(cfg_conditions, None, progress)
+        if return_tokens:
+            return self.generate_audio(tokens), tokens
+
+        return self.generate_audio(tokens)
 
     @torch.no_grad()
     def _prepare_tokens_and_attributes(
