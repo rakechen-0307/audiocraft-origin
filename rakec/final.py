@@ -171,7 +171,7 @@ for i in range(1):
     null_embed = clap_conditioner.clap.get_audio_embedding_from_data(null_condition, use_tensor=True).unsqueeze(0)
 
     embed = torch.cat((audio_embed, null_embed), dim=0)
-    empty_idx = torch.Tensor([1])
+    empty_idx = torch.LongTensor([1])
     B = embed.shape[0]
     out_embed = clap_conditioner.output_proj(embed).view(B, -1, clap_conditioner.output_dim)
 
