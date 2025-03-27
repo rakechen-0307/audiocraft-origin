@@ -58,7 +58,7 @@ evaluate:
 #     device: cuda
 
 optim:
-  epochs: 100
+  epochs: 50
   updates_per_epoch: 30
   lr: 5e-5
   optimizer: adamw

@@ -42,19 +42,19 @@ dataset:
   train:
     num_samples: 1000000 # need a randomly large number here for AudioDataset
   valid:
-    num_samples: 32
+    num_samples: 200
   generate:
     num_samples: 10
   evaluate:
-    num_samples: 32
+    num_samples: 200
 
 metrics:
   fad:
     use_gt: false
     model: tf
     tf:
-      bin: /work/u2614323/code/audiocraft-origin # path to local frechet_audio_distance code
-      model_path: /work/u2614323/code/audiocraft-origin/rakec/fad/vggish_model.ckpt
+      bin: ./ # path to local frechet_audio_distance code
+      model_path: ./rakec/fad/vggish_model.ckpt
   kld:
     use_gt: false
     model: passt
@@ -64,7 +64,7 @@ metrics:
     use_gt: false
     model: clap
     clap:
-      model_path: /work/u2614323/code/audiocraft-origin/rakec/clap/music_audioset_epoch_15_esc_90.14.pt
+      model_path: ./rakec/clap/music_audioset_epoch_15_esc_90.14.pt
       model_arch: "HTSAT-base"
       enable_fusion: false
   chroma_cosine:
