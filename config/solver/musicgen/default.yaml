@@ -53,8 +53,8 @@ metrics:
     use_gt: false
     model: tf
     tf:
-      bin: ./ # path to local frechet_audio_distance code
-      model_path: ./rakec/fad/vggish_model.ckpt
+      bin: /work/u2614323/code/audiocraft-origin # path to local frechet_audio_distance code
+      model_path: /work/u2614323/code/audiocraft-origin/rakec/fad/vggish_model.ckpt
   kld:
     use_gt: false
     model: passt
@@ -64,7 +64,7 @@ metrics:
     use_gt: false
     model: clap
     clap:
-      model_path: ./rakec/clap/music_audioset_epoch_15_esc_90.14.pt
+      model_path: /work/u2614323/code/audiocraft-origin/rakec/clap/music_audioset_epoch_15_esc_90.14.pt
       model_arch: "HTSAT-base"
       enable_fusion: false
   chroma_cosine:
