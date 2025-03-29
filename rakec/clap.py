@@ -8,6 +8,7 @@ seg_len = 10
 
 model = MusicGenCLAP.get_pretrained('checkpoints/clapemb(spotify-small-80)')
 model.set_generation_params(duration=30, cfg_coef=3.0)
+print(model)
 
 sample_dir = "/work/u2614323/code/audiocraft-origin/samples/audios"
 sample_files = sorted(os.listdir(sample_dir))
