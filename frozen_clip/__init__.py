@@ -1,1 +1,1 @@
-from . import model, vision_transformer, transform, weight_loaders, rand_augment, random_erasing
+from frozen_clip import model, vision_transformer, weight_loaders, transform, rand_augment, random_erasing

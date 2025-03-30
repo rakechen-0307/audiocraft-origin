@@ -12,6 +12,8 @@ from audiocraft.data.audio_utils import convert_audio
 
 seg_length = 10
 sample_rate = 48000
+num_frames = 16
+sampling_rate = -1
 mean = torch.Tensor([0.48145466, 0.4578275, 0.40821073])
 std = torch.Tensor([0.26862954, 0.26130258, 0.27577711])
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -95,15 +97,15 @@ def random_resized_crop(
 def sample_frame_idx(len):
     frame_indices = []
 
-    if 16 < 0: # tsn sample
-        seg_size = (len - 1) / 16
-        for i in range(16):
+    if sample_rate < 0: # tsn sample
+        seg_size = (len - 1) / num_frames
+        for i in range(num_frames):
             frame_indices.append(round(seg_size * i))
-    elif 16 * (16 - 1) + 1 >= len:
-        for i in range(16):
-            frame_indices.append(i * 16 if i * 16 < len else frame_indices[-1])
+    elif sample_rate * (num_frames - 1) + 1 >= len:
+        for i in range(num_frames):
+            frame_indices.append(i * sampling_rate if i * sampling_rate < len else frame_indices[-1])
     else:
-        frame_indices = list(range(0, 0 + 16 * 16, 16))
+        frame_indices = list(range(0, 0 + sampling_rate * num_frames, sampling_rate))
 
     return frame_indices
 
@@ -126,28 +128,28 @@ def video_to_frame(video_file):
     return frames
 
 
-music_model = MusicGenCLAP.get_pretrained('checkpoints/clapemb(spotify-small-80)')
+music_model = MusicGenCLAP.get_pretrained('checkpoints/clapemb(spotify-small-v1)')
 music_model.set_generation_params(duration=30, cfg_coef=3.0)
 clap_conditioner = music_model.lm.condition_provider.conditioners.description
 # print(clap_conditioner)
 
 clipclap_model = EVLTransformer(
-    num_frames=16,
+    num_frames=num_frames,
     backbone_name='ViT-L/14-lnpre',
     backbone_type='clip',
     backbone_mode='freeze_fp16',
-    backbone_path='./frozen_clip/checkpoint/ViT-L-14.pt',
+    backbone_path='./frozen_clip/checkpoints/ViT-L-14.pt',
     decoder_num_layers=4,
     decoder_qkv_dim=1024,
     decoder_num_heads=16,
     num_classes=512
 )
 clipclap_model.to(device)
-state_dict = torch.load("./frozen_clip/checkpoint/best.pt", map_location='cpu')
-msg = clipclap_model.load_state_dict(state_dict, strict=False)
+state_dict = torch.load("./frozen_clip/checkpoints/vitl14-16f.pt", map_location='cpu')
+msg = clipclap_model.load_state_dict(state_dict)
 # print(msg)
 
-sample_dir = "/work/u2614323/code/audiocraft-origin/samples/videos"
+sample_dir = "./samples/videos"
 sample_files = sorted(os.listdir(sample_dir))
 files = []
 file_names = []
@@ -156,8 +158,7 @@ for i in range(len(sample_files)):
     file_names.append(sample_files[i])
 
 audio = []
-# for i in range(len(files)):
-for i in range(1):
+for i in range(len(files)):
     video_file = files[i]
     frames = video_to_frame(video_file)
     frames = frames.unsqueeze(0).to(device)
@@ -190,10 +191,3 @@ for i in range(1):
 
     wav = music_model.generate_with_conditions(cfg_conditions)
     audio_write(f"{file_names[i].split('.')[0]}", wav.cpu().squeeze(0), music_model.sample_rate, strategy="loudness", loudness_compressor=True)
-    
-
-"""
-for idx, one_wav in enumerate(wav):
-    # Will save under {idx}.wav, with loudness normalization at -14 db LUFS.
-    audio_write(f"{file_names[idx].split('.')[0]}", one_wav.cpu(), music_model.sample_rate, strategy="loudness", loudness_compressor=True)
-"""

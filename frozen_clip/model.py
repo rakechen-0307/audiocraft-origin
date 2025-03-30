@@ -62,8 +62,8 @@ class TemporalCrossAttention(nn.Module):
         assert L == np.prod(self.spatial_size) + 1
 
         ret = torch.zeros([N, T, L, self.w1.size(-1)], device='cuda')
-        ret[:, 1:, 1:, :] += self.forward_half(q[:, 1:, :, :, :].cpu(), k[:, :-1, :, :, :].cpu(), self.w1.cpu()).cuda()
-        ret[:, :-1, 1:, :] += self.forward_half(q[:, :-1, :, :, :].cpu(), k[:, 1:, :, :, :].cpu(), self.w2.cpu()).cuda()
+        ret[:, 1:, 1:, :] += self.forward_half(q[:, 1:, :, :, :], k[:, :-1, :, :, :], self.w1)
+        ret[:, :-1, 1:, :] += self.forward_half(q[:, :-1, :, :, :], k[:, 1:, :, :, :], self.w2)
 
         return ret
 
@@ -110,13 +110,14 @@ class EVLDecoder(nn.Module):
 
         self.cls_token = nn.Parameter(torch.zeros([in_feature_dim]))
 
+
     def _initialize_weights(self):
         nn.init.normal_(self.cls_token, std=0.02)
+
 
     def forward(self, in_features: List[Dict[str, torch.Tensor]]):
         N, T, L, C = in_features[0]['out'].size()
         assert len(in_features) == self.num_layers
-        self._initialize_weights()
         x = self.cls_token.view(1, 1, -1).repeat(N, 1, 1)
 
         for i in range(self.num_layers):
@@ -155,7 +156,7 @@ class EVLTransformer(nn.Module):
         decoder_qkv_dim: int = 768,
         decoder_num_heads: int = 12,
         decoder_mlp_factor: float = 4.0,
-        num_classes: int = 512,
+        num_classes: int = 400,
         enable_temporal_conv: bool = True,
         enable_temporal_pos_embed: bool = True,
         enable_temporal_cross_attention: bool = True,

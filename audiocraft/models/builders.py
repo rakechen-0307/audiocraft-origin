@@ -158,6 +158,8 @@ def get_conditioner_provider(
                 output_dim=output_dim, duration=duration, device=device, **model_args
             )
         elif model_type == "clap":
+            model_args['checkpoint'] = "./rakec/clap/music_audioset_epoch_15_esc_90.14.pt"
+            print(model_args)
             conditioners[str(cond)] = CLAPEmbeddingConditioner(
                 output_dim=output_dim, device=device, **model_args
             )

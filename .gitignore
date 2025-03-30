@@ -62,4 +62,8 @@ dataset/*
 /notes
 
 # others
-clipclap
+checkpoints
+frozen_clip/checkpoints
+samples
+rakec/clap
+outputs

@@ -1,19 +1,17 @@
 import os
 import json
 from tqdm import tqdm
-from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
-from pydub import AudioSegment
 
 struct_path = "./struct"
-audio_path = "../audios"
-video_path = "../videos"
-output_path = "../clipclap"
+audio_path = "../data/valid/audios"
+video_path = "../data/valid/videos"
+output_path = "../clipclap/valid"
 
-files = sorted(os.listdir(struct_path))
-for i in tqdm(range(1550)):
-# for i in tqdm(range(1974, 1975)):
+files = sorted(os.listdir(audio_path))
+for i in tqdm(range(len(files))):
     filename = files[i].split(".")[0]
-    struct_file = os.path.join(struct_path, f"{filename}.json")
+    idx = filename[5:]
+    struct_file = os.path.join(struct_path, f"{idx}.json")
     audio_file = os.path.join(audio_path, f"{filename}.mp3")
     video_file = os.path.join(video_path, f"{filename}.mp4")
 
@@ -28,23 +26,27 @@ for i in tqdm(range(1550)):
         segments = json.load(sf)['segments']
 
     # separate data
-    audio = AudioSegment.from_file(audio_file)
     count = 0
     for j in range(len(segments)):
-        if (segments[j]['end'] - segments[j]['start'] >= 10):
+        if (segments[j]['label'] == 'bridge' or segments[j]['label'] == 'inst' or 
+            segments[j]['label'] == 'solo' or segments[j]['label'] == 'verse' or 
+            segments[j]['label'] == 'chorus'):
             split_list = []
-            if (segments[j]['end'] - segments[j]['start'] >= 30):
+            if (segments[j]['end'] - segments[j]['start'] >= 60):
                 split_list = [
-                    segments[j]['start'] + (1/3) * (segments[j]['end'] - segments[j]['start']),
-                    segments[j]['start'] + (2/3) * (segments[j]['end'] - segments[j]['start'])
+                    segments[j]['start'] + 2,
+                    (segments[j]['start'] + segments[j]['end']) / 2 - 4,
+                    segments[j]['end'] - 12
                 ]
-            elif (segments[j]['end'] - segments[j]['start'] >= 15):
+            elif (segments[j]['end'] - segments[j]['start'] >= 30):
                 split_list = [
-                    segments[j]['start'] + (1/2) * (segments[j]['end'] - segments[j]['start'])
+                    segments[j]['start'] + 2,
+                    segments[j]['end'] - 12
                 ]
-            
-            if (j + 1 < len(segments) and segments[j + 1]['end'] - segments[j + 1]['start'] >= 10):
-                split_list.append(segments[j + 1]['start'])
+            elif (segments[j]['end'] - segments[j]['start'] >= 12):
+                split_list = [
+                    segments[j]['start'] + 2
+                ]
 
             for split_time in split_list:
                 if (count < 10):
@@ -56,8 +58,18 @@ for i in tqdm(range(1550)):
             
                 audio_output = os.path.join(audio_output_dir, f"{num}.mp3")
                 video_output = os.path.join(video_output_dir, f"{num}.mp4")
-                audio_seg = audio[(split_time-5.0)*1000:(split_time+5.0)*1000+1]
-                audio_seg.export(audio_output, format="mp3")
-                ffmpeg_extract_subclip(video_file, split_time-5.0, split_time+5.0, targetname=video_output)
+                os.system("ffmpeg -i {target} -ss {time} -t 8 -c:a libmp3lame -q:a 0 {output}".format(
+                    target=audio_file,
+                    time=split_time,
+                    output=audio_output
+                ))
+                os.system("ffmpeg -i {target} -ss {time} -t 8 -c:v libx264 -preset fast -crf 23 -an {output}".format(
+                    target=video_file,
+                    time=split_time,
+                    output=video_output
+                ))
 
                 count += 1
+    
+    os.system("rm {}".format(audio_file))
+    os.system("rm {}".format(video_file))

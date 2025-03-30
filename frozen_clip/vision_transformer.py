@@ -93,7 +93,6 @@ class PatchEmbed2D(nn.Module):
 
         self.patch_size = patch_size
         self.in_channels = in_channels
-        self.embed_dim = embed_dim
 
         self.proj = nn.Linear(np.prod(patch_size) * in_channels, embed_dim)
 
@@ -110,10 +109,7 @@ class PatchEmbed2D(nn.Module):
         assert C == self.in_channels and H % pH == 0 and W % pW == 0
 
         x = x.view(B, C, H // pH, pH, W // pW, pW).permute(0, 2, 4, 1, 3, 5).flatten(3).flatten(1, 2)
-        a, b = x.shape[0], x.shape[1]
-        x = x.view(-1, np.prod(self.patch_size) * self.in_channels)
         x = self.proj(x)
-        x = x.view(a, b, self.embed_dim)
         
         return x
 

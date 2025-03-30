@@ -20,7 +20,7 @@ conditioners:
   description:
     model: clap
     clap:
-      checkpoint: /work/u2614323/code/audiocraft-origin/rakec/clap/music_audioset_epoch_15_esc_90.14.pt
+      checkpoint: ./rakec/clap/music_audioset_epoch_15_esc_90.14.pt
       model_arch: "HTSAT-base"
       enable_fusion: false
       sample_rate: 48000

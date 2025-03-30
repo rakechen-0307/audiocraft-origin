@@ -6,10 +6,10 @@ from audiocraft.data.audio_utils import convert_audio
 
 seg_len = 10
 
-model = MusicGenCLAP.get_pretrained('checkpoints/clapemb(spotify-small-80)')
-model.set_generation_params(duration=30, cfg_coef=3.0)
+model = MusicGenCLAP.get_pretrained('checkpoints/clapemb(spotify-small-new)')
+model.set_generation_params(duration=10, cfg_coef=3.0)
 
-sample_dir = "/work/u2614323/code/audiocraft-origin/samples/audios"
+sample_dir = "./samples/audios"
 sample_files = sorted(os.listdir(sample_dir))
 wav_files = []
 file_names = []
@@ -17,14 +17,10 @@ for i in range(len(sample_files)):
     wav_files.append(sample_dir + "/" + sample_files[i])
     file_names.append(sample_files[i])
 
-wavs = []
-for file in [wav_files[0]]:
+for i in range(len(wav_files)):
+    file = wav_files[i]
     wav, sr = torchaudio.load(file)
     wav = convert_audio(wav, sr, model.sample_rate, model.audio_channels)
-    wavs.append(wav)
+    audio = model.generate_with_clap_embed(wav.unsqueeze(0))
 
-wav = model.generate_with_clap_embed(wavs)  # generates 3 samples.
-
-for idx, one_wav in enumerate(wav):
-    # Will save under {idx}.wav, with loudness normalization at -14 db LUFS.
-    audio_write(f"{file_names[idx].split('.')[0]}", one_wav.cpu(), model.sample_rate, strategy="loudness", loudness_compressor=True)
+    audio_write(f"{file_names[i].split('.')[0]}", audio.cpu().squeeze(0), model.sample_rate, strategy="loudness", loudness_compressor=True)
