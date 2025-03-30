@@ -236,13 +236,13 @@ class MusicDataset(InfoAudioDataset):
             music_info = MusicInfo.from_dict(info_data, fields_required=False)
 
         music_info.self_wav = WavCondition(
-            wav=wav[None], length=torch.tensor([info.n_frames]),
+            wav=wav[None].clone(), length=torch.tensor([info.n_frames]),
             sample_rate=[info.sample_rate], path=[info.meta.path], seek_time=[info.seek_time])
 
         for att in self.joint_embed_attributes:
             att_value = getattr(music_info, att)
             joint_embed_cond = JointEmbedCondition(
-                wav[None], [att_value], torch.tensor([info.n_frames]),
+                wav[None].clone(), [att_value], torch.tensor([info.n_frames]),
                 sample_rate=[info.sample_rate], path=[info.meta.path], seek_time=[info.seek_time])
             music_info.joint_embed[att] = joint_embed_cond
 

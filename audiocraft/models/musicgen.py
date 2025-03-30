@@ -20,7 +20,7 @@ from .lm import LMModel
 from .builders import get_debug_compression_model, get_debug_lm_model
 from .loaders import load_compression_model, load_lm_model
 from ..data.audio_utils import convert_audio
-from ..modules.conditioners import ConditioningAttributes, WavCondition
+from ..modules.conditioners import ConditioningAttributes, WavCondition, JointEmbedCondition
 
 
 MelodyList = tp.List[tp.Optional[torch.Tensor]]
@@ -306,3 +306,131 @@ class MusicGen(BaseGenModel):
 
             gen_tokens = torch.cat(all_tokens, dim=-1)
         return gen_tokens
+
+    def _generate_tokens_with_conditions(self, cfg_conditions,
+                         prompt_tokens: tp.Optional[torch.Tensor], progress: bool = False) -> torch.Tensor:
+        total_gen_len = int(self.duration * self.frame_rate)
+        max_prompt_len = int(min(self.duration, self.max_duration) * self.frame_rate)
+        current_gen_offset: int = 0
+
+        def _progress_callback(generated_tokens: int, tokens_to_generate: int):
+            generated_tokens += current_gen_offset
+            if self._progress_callback is not None:
+                # Note that total_gen_len might be quite wrong depending on the
+                # codebook pattern used, but with delay it is almost accurate.
+                self._progress_callback(generated_tokens, tokens_to_generate)
+            else:
+                print(f'{generated_tokens: 6d} / {tokens_to_generate: 6d}', end='\r')
+
+        if prompt_tokens is not None:
+            assert max_prompt_len >= prompt_tokens.shape[-1], \
+                "Prompt is longer than audio to generate" 
+            
+        callback = None
+        if progress:
+            callback = _progress_callback
+        
+        with self.autocast:
+            gen_tokens = self.lm.generate_with_embed(
+                prompt_tokens, cfg_conditions,
+                callback=callback, max_gen_len=total_gen_len, **self.generation_params 
+            )
+        return gen_tokens
+
+
+class MusicGenCLAP(MusicGen):
+    @staticmethod
+    def get_pretrained(name: str = 'facebook/musicgen-melody', device=None):
+        if device is None:
+            if torch.cuda.device_count():
+                device = 'cuda'
+            else:
+                device = 'cpu'
+
+        lm = load_lm_model(name, device=device)
+        compression_model = load_compression_model(name, device=device)
+
+        return MusicGenCLAP(name, compression_model, lm)
+
+    def generate_with_clap_embed(
+        self,
+        wavs: MelodyList,
+        progress: bool = False,
+        return_tokens: bool = False
+    ) -> tp.Union[torch.Tensor, tp.Tuple[torch.Tensor, torch.Tensor]]:
+        """Generate samples conditioned on text and melody.
+
+        Args:
+            descriptions (list of str): A list of strings used as text conditioning.
+            melody_wavs: (torch.Tensor or list of Tensor): A batch of waveforms used as
+                melody conditioning. Should have shape [B, C, T] with B matching the description length,
+                C=1 or 2. It can be [C, T] if there is a single description. It can also be
+                a list of [C, T] tensors.
+            melody_sample_rate: (int): Sample rate of the melody waveforms.
+            progress (bool, optional): Flag to display progress of the generation process. Defaults to False.
+        """
+
+        attributes, prompt_tokens = self._prepare_tokens_and_attributes(
+            prompt=None,
+            wavs=wavs
+        )
+
+        assert prompt_tokens is None
+        tokens = self._generate_tokens(attributes, prompt_tokens, progress)
+
+        if return_tokens:
+            return self.generate_audio(tokens), tokens
+
+        return self.generate_audio(tokens)
+    
+    def generate_with_conditions(
+        self,
+        cfg_conditions,
+        progress: bool = False,
+        return_tokens: bool = False
+    ) -> tp.Union[torch.Tensor, tp.Tuple[torch.Tensor, torch.Tensor]]:
+        
+        tokens = self._generate_tokens_with_conditions(cfg_conditions, None, progress)
+        if return_tokens:
+            return self.generate_audio(tokens), tokens
+
+        return self.generate_audio(tokens)
+
+    @torch.no_grad()
+    def _prepare_tokens_and_attributes(
+        self,
+        prompt: tp.Optional[torch.Tensor],
+        wavs: tp.Optional[MelodyList] = None
+    ) -> tp.Tuple[tp.List[ConditioningAttributes], tp.Optional[torch.Tensor]]:
+        """Prepare model inputs.
+
+        Args:
+            descriptions (list of str): A list of strings used as text conditioning.
+            prompt (torch.Tensor): A batch of waveforms used for continuation.
+            melody_wavs (torch.Tensor, optional): A batch of waveforms
+                used as melody conditioning. Defaults to None.
+        """
+        attributes = [
+            ConditioningAttributes(
+                joint_embed={
+                    'description': JointEmbedCondition(
+                        wav[None], [""], torch.tensor([wav.shape[-1]]),
+                        sample_rate=[self.sample_rate], path=[""], seek_time=[0]
+                    )
+                }
+            )
+            for wav in wavs
+        ]
+
+        if prompt is not None:
+            # TODO: unsure how to modify this part for clap embeddings.
+            # if descriptions is not None:
+            #     assert len(descriptions) == len(prompt), "Prompt and nb. descriptions doesn't match"
+            # prompt = prompt.to(self.device)
+            # prompt_tokens, scale = self.compression_model.encode(prompt)
+            # assert scale is None
+            pass
+        else:
+            prompt_tokens = None
+
+        return attributes, prompt_tokens

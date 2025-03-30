@@ -545,3 +545,101 @@ class LMModel(StreamingModule):
         # ensure the returned codes are all valid
         assert (out_codes >= 0).all() and (out_codes <= self.card).all()
         return out_codes
+
+    @torch.no_grad()
+    def generate_with_embed(self,
+                 prompt: tp.Optional[torch.Tensor] = None,
+                 cfg_conditions = {},
+                 max_gen_len: int = 256,
+                 use_sampling: bool = True,
+                 temp: float = 1.0,
+                 top_k: int = 250,
+                 top_p: float = 0.0,
+                 cfg_coef: tp.Optional[float] = None,
+                 two_step_cfg: tp.Optional[bool] = None,
+                 remove_prompts: bool = False,
+                 check: bool = False,
+                 callback: tp.Optional[tp.Callable[[int, int], None]] = None,
+                 **kwargs) -> torch.Tensor:
+
+        assert not self.training, "generation shouldn't be used in training mode."
+        first_param = next(iter(self.parameters()))
+        device = first_param.device
+
+        num_samples = 1
+
+        if prompt is None:
+            assert num_samples > 0
+            prompt = torch.zeros((num_samples, self.num_codebooks, 0), dtype=torch.long, device=device)
+
+        B, K, T = prompt.shape
+        start_offset = T
+        assert start_offset < max_gen_len
+
+        pattern = self.pattern_provider.get_pattern(max_gen_len)
+        # this token is used as default value for codes that are not generated yet
+        unknown_token = -1
+
+        # we generate codes up to the max_gen_len that will be mapped to the pattern sequence
+        gen_codes = torch.full((B, K, max_gen_len), unknown_token, dtype=torch.long, device=device)
+        # filling the gen_codes with the prompt if needed
+        gen_codes[..., :start_offset] = prompt
+        # create the gen_sequence with proper interleaving from the pattern: [B, K, S]
+        gen_sequence, indexes, mask = pattern.build_pattern_sequence(gen_codes, self.special_token_id)
+        # retrieve the start_offset in the sequence:
+        # it is the first sequence step that contains the `start_offset` timestep
+        start_offset_sequence = pattern.get_first_step_with_timesteps(start_offset)
+        assert start_offset_sequence is not None
+
+        with self.streaming():
+            unconditional_state = self.get_streaming_state()
+            prev_offset = 0
+            gen_sequence_len = gen_sequence.shape[-1]  # gen_sequence shape is [B, K, S]
+            for offset in range(start_offset_sequence, gen_sequence_len):
+                # get current sequence (note that the streaming API is providing the caching over previous offsets)
+                curr_sequence = gen_sequence[..., prev_offset:offset]
+                curr_mask = mask[None, ..., prev_offset:offset].expand(B, -1, -1)
+                if check:
+                    # check coherence between mask and sequence
+                    assert (curr_sequence == torch.where(curr_mask, curr_sequence, self.special_token_id)).all()
+                    # should never happen as gen_sequence is filled progressively
+                    assert not (curr_sequence == unknown_token).any()
+                # sample next token from the model, next token shape is [B, K, 1]
+                next_token = self._sample_next_token(
+                    curr_sequence, cfg_conditions, unconditional_state, use_sampling, temp, top_k, top_p,
+                    cfg_coef=cfg_coef, two_step_cfg=two_step_cfg)
+                # ensure the tokens that should be masked are properly set to special_token_id
+                # as the model never output special_token_id
+                valid_mask = mask[..., offset:offset+1].expand(B, -1, -1)
+                next_token[~valid_mask] = self.special_token_id
+                # ensure we don't overwrite prompt tokens, we only write over unknown tokens
+                # (then mask tokens should be left as is as well, which is correct)
+                gen_sequence[..., offset:offset+1] = torch.where(
+                    gen_sequence[..., offset:offset+1] == unknown_token,
+                    next_token, gen_sequence[..., offset:offset+1]
+                )
+                prev_offset = offset
+                if callback is not None:
+                    callback(1 + offset - start_offset_sequence, gen_sequence_len - start_offset_sequence)
+        unconditional_state.clear()
+
+        # ensure sequence has been entirely filled
+        assert not (gen_sequence == unknown_token).any()
+        # ensure gen_sequence pattern and mask are matching
+        # which means the gen_sequence is valid according to the pattern
+        assert (
+            gen_sequence == torch.where(mask[None, ...].expand(B, -1, -1), gen_sequence, self.special_token_id)
+        ).all()
+        # get back the codes, trimming the prompt if needed and cutting potentially incomplete timesteps
+        out_codes, out_indexes, out_mask = pattern.revert_pattern_sequence(gen_sequence, special_token=unknown_token)
+
+        # sanity checks over the returned codes and corresponding masks
+        assert (out_codes[..., :max_gen_len] != unknown_token).all()
+        assert (out_mask[..., :max_gen_len] == 1).all()
+
+        out_start_offset = start_offset if remove_prompts else 0
+        out_codes = out_codes[..., out_start_offset:max_gen_len]
+
+        # ensure the returned codes are all valid
+        assert (out_codes >= 0).all() and (out_codes <= self.card).all()
+        return out_codes

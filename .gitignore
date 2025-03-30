@@ -60,3 +60,10 @@ dataset/*
 /notebooks
 /local_scripts
 /notes
+
+# others
+checkpoints
+frozen_clip/checkpoints
+samples
+rakec/clap
+outputs
